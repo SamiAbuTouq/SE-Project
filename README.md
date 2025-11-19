@@ -21,10 +21,8 @@
 ## 4. Repository Organization
 
 ```
-/diagrams     - All UML and modeling diagrams
-/docs         - Project documentation, reports
-/src          - Source code files
-/reports      - Generated PDFs, presentations, documents
+/docs             - Project documentation, reports
+umls/src          - Source code files
 ```
 
 ## 5. Team Contributions

@@ -6,7 +6,7 @@
   - _20220719 Sami Khaled Abu Touq_
   - _20220179 Yazan Ahmad Bedair_
   - _20220501 Abdullah Suleiman Jaradat_
-  - _20220659 Malek Mahmoud Haj Asad_
+  - _20220659 Malik Mahmoud Haj Asad_
 - **Course Code, Semester, Instructor:**
   - _13477, first semester, Dr. Samer Elkababji_
 

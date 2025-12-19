@@ -1,0 +1,106 @@
+@startuml Place_Order_Use_Case_Diagram
+left to right direction
+!theme plain
+skinparam shadowing true
+skinparam roundcorner 12
+skinparam backgroundColor #FFFFFF
+skinparam ArrowThickness 1.5
+skinparam defaultTextAlignment center
+skinparam packageStyle rectangle
+
+title Place Order - Use Case Diagram\nOnline Food Ordering System
+
+actor "Customer" as Customer
+actor "Payment Gateway" as PaymentGateway
+actor "Notification Service" as NotificationService
+actor "Restaurant" as Restaurant
+
+rectangle "Online Food Ordering System" {
+  
+  package "Menu & Cart Management" #F0F8FF {
+    (Select Items from Menu) as UC_SelectItems
+    (Manage Cart) as UC_ManageCart
+    (Customize Items) as UC_CustomizeItems
+  }
+  
+  package "Order Configuration" #F5F5DC {
+    (Select Delivery Address) as UC_SelectAddress
+    (View Order Summary) as UC_ViewSummary
+    (Validate Order) as UC_ValidateOrder
+    (Schedule Order for Later) as UC_Schedule
+  }
+  
+  package "Payment & Pricing" #FFE4E1 {
+    (Calculate Order Total) as UC_Total
+    (Apply Coupon/Discount) as UC_Coupon
+    (Add Tip) as UC_Tip
+    (Make Payment) as UC_Payment
+    (Handle Payment Failure) as UC_PaymentFail
+  }
+  
+  package "Order Processing" #E6F3E6 {
+    (Place Order) as UC_PlaceOrder
+    (Cancel Order) as UC_Cancel
+    (Save Order as Favorite) as UC_Favorite
+    (Send Order Notifications) as UC_Notify
+    (Process Order Request) as UC_ProcessOrder
+  }
+
+  ' ===== Include relationships (mandatory sub-functions) =====
+  UC_PlaceOrder ..> UC_SelectItems  : <<include>>
+  UC_PlaceOrder ..> UC_ManageCart   : <<include>>
+  UC_PlaceOrder ..> UC_SelectAddress: <<include>>
+  UC_PlaceOrder ..> UC_ViewSummary  : <<include>>
+  UC_PlaceOrder ..> UC_ValidateOrder: <<include>>
+  UC_PlaceOrder ..> UC_Total        : <<include>>
+  UC_PlaceOrder ..> UC_Payment      : <<include>>
+  UC_PlaceOrder ..> UC_Notify       : <<include>>
+  UC_PlaceOrder ..> UC_ProcessOrder : <<include>>
+
+  ' ===== Extend relationships (optional/conditional features) =====
+  ' Direction: Base <.. Extension (correct UML 2.x syntax)
+  UC_PlaceOrder <.. UC_CustomizeItems : <<extend>>\n(extension point:\nSelectingItems)
+  UC_PlaceOrder <.. UC_Schedule       : <<extend>>\n(extension point:\nConfiguringOrder)
+  UC_PlaceOrder <.. UC_Coupon         : <<extend>>\n(extension point:\nBeforeTotal)
+  UC_PlaceOrder <.. UC_Tip            : <<extend>>\n(extension point:\nBeforeTotal)
+  UC_PlaceOrder <.. UC_Favorite       : <<extend>>\n(extension point:\nAfterSuccess)
+  UC_PlaceOrder <.. UC_Cancel         : <<extend>>\n(extension points:\nSelectingItems,\nConfiguringOrder,\nBeforePayment)
+  
+  UC_Payment <.. UC_PaymentFail : <<extend>>\n(extension point:\nPaymentFailure)
+
+  ' ===== Actor associations =====
+  ' Primary actor initiates the main use case
+  Customer -- UC_PlaceOrder
+  
+  ' Supporting actors interact with specific use cases
+  PaymentGateway -- UC_Payment
+  PaymentGateway -- UC_PaymentFail
+  NotificationService -- UC_Notify
+  Restaurant -- UC_ProcessOrder
+}
+
+' ===== Extension Point Documentation =====
+' note right of UC_Payment
+'   <b>Extension Points:</b>
+'   • PaymentFailure:
+'     When transaction fails,
+'     retry or use alternate method
+' end note
+
+' note right of UC_PlaceOrder
+'   <b>Extension Points:</b>
+'   • SelectingItems: During item selection phase
+'   • ConfiguringOrder: During order configuration
+'   • BeforePayment: Before payment initiation
+'   • BeforeTotal: Before total calculation
+'   • AfterSuccess: After successful placement
+' end note
+
+' note bottom of "Online Food Ordering System"
+'   <b>Legend:</b>
+'   <<include>> = Mandatory sub-function (always executed)
+'   <<extend>> = Optional/conditional feature (conditionally executed)
+'   Extension points define where extensions can occur in base use case
+' end note
+
+@enduml

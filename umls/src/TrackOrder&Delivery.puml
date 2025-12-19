@@ -1,0 +1,109 @@
+@startuml Track_Order_And_Delivery_UseCase
+' UML 2.x compliant Use Case Diagram (OMG UML / ISO/IEC 19505)
+' Individual use case: Track Order & Delivery (Online Food Ordering System)
+
+left to right direction
+!theme plain
+skinparam shadowing true
+skinparam roundcorner 12
+skinparam actorStyle stickman
+skinparam packageStyle rectangle
+skinparam defaultTextAlignment center
+skinparam ArrowThickness 1.2
+
+title Use Case Diagram - Track Order & Delivery\n(Online Food Ordering System)
+
+' ===== Actors (external to the system boundary) =====
+actor Customer as C
+actor Restaurant as R
+actor "Delivery Agent" as D
+
+actor "Mapping / GPS API" as MAP <<external system>>
+actor "Notification Service" as NS <<external system>>
+
+' ===== System boundary =====
+rectangle "Online Food Ordering System" as OFOS {
+
+  ' Main (goal-level) use case
+  usecase "Track Order & Delivery" as UC_TRACK
+
+  ' -------- Customer Tracking (what customer sees/does) --------
+  package "Customer Tracking" {
+    usecase "Retrieve Order\nTracking Details" as UC_RETRIEVE
+    usecase "View Order Status\nTimeline" as UC_STATUS
+    usecase "View ETA /\nDelivery Estimate" as UC_ETA
+    usecase "View Live Delivery Map /\nDriver Location" as UC_MAP
+    usecase "Receive Tracking\nNotifications" as UC_NOTIFY
+
+    ' Optional/conditional customer actions
+    usecase "Contact Delivery\nAgent" as UC_CONTACT_D
+    usecase "Contact Support /\nReport Issue" as UC_SUPPORT
+    usecase "View Proof\nof Delivery" as UC_POD
+    usecase "Confirm Delivery /\nRate Delivery" as UC_CONFIRM_RATE
+  }
+
+  ' -------- Operational Updates (what ops roles update) --------
+  package "Operational Updates" {
+    usecase "Update Preparation\nStatus" as UC_PREP
+    usecase "Update Delivery\nStatus" as UC_DELIV_STATUS
+    usecase "Share Live\nLocation" as UC_SHARE_LOC
+  }
+}
+
+' ===== Actor associations (solid lines; no arrowheads needed) =====
+C -- UC_TRACK
+C -- UC_CONTACT_D
+C -- UC_SUPPORT
+C -- UC_POD
+C -- UC_CONFIRM_RATE
+
+R -- UC_PREP
+
+D -- UC_DELIV_STATUS
+D -- UC_SHARE_LOC
+
+MAP -- UC_MAP
+NS -- UC_NOTIFY
+
+' ===== Use case relationships (UML semantics) =====
+' Mandatory sub-behaviors of Track Order & Delivery => <<include>>
+UC_TRACK ..> UC_RETRIEVE : <<include>>
+UC_TRACK ..> UC_STATUS   : <<include>>
+UC_TRACK ..> UC_ETA      : <<include>>
+UC_TRACK ..> UC_NOTIFY   : <<include>>
+
+' Live map is conditional (only if GPS/location available) => <<extend>>
+UC_MAP ..> UC_TRACK : <<extend>>\n[Live tracking enabled]
+
+' Optional customer interactions while tracking => <<extend>>
+UC_CONTACT_D ..> UC_TRACK : <<extend>>\n[Customer requests contact]
+UC_SUPPORT    ..> UC_TRACK : <<extend>>\n[Problem detected]
+UC_POD        ..> UC_TRACK : <<extend>>\n[Order delivered]
+UC_CONFIRM_RATE ..> UC_TRACK : <<extend>>\n[Delivery completed]
+
+' Operational updates drive what the customer sees; they support tracking
+' Model as includes if your system always consumes these updates during tracking,
+' otherwise they can remain as independent use cases associated to their actors.
+UC_TRACK ..> UC_DELIV_STATUS : <<include>>
+UC_TRACK ..> UC_PREP         : <<include>>
+
+' Share live location is conditional (only when agent enables it) => <<extend>>
+UC_SHARE_LOC ..> UC_DELIV_STATUS : <<extend>>\n[Location sharing enabled]
+
+' ===== Notes (IEEE-friendly, non-intrusive, UML-compliant) =====
+note right of UC_TRACK
+Goal: Provide real-time visibility of order and delivery progress.
+Primary Actor: Customer
+Supporting Actors: Restaurant, Delivery Agent
+External Systems: Mapping/GPS API, Notification Service
+end note
+
+note bottom of UC_RETRIEVE
+Includes retrieving current order state, timestamps, and assigned courier (if any).
+end note
+
+note bottom of UC_NOTIFY
+Notifications include status changes (accepted, prepared, picked up, delivered) and ETA updates.
+end note
+
+@enduml

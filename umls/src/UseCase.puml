@@ -1,0 +1,107 @@
+@startuml Group04_Customer_UseCase
+' PlantUML (latest) - Customer Use Case Diagram (Customer ONLY)
+left to right direction
+
+!theme plain
+skinparam shadowing true
+skinparam roundcorner 12
+skinparam backgroundColor #FFFFFF
+
+skinparam usecase {
+  BackgroundColor #FFFFFF
+  BorderColor #333333
+  FontColor #000000
+}
+skinparam actor {
+  FontColor #000000
+  BorderColor #333333
+}
+skinparam rectangle {
+  BackgroundColor #F5F5F5
+  BorderColor #333333
+  FontColor #000000
+}
+skinparam ArrowColor #333333
+
+title Use Case Diagram - Customer (Online Food Ordering System)
+
+actor Customer as C
+
+rectangle "Online Food Ordering System" as OFOS {
+
+  ' Authentication & Profile
+  (Register) as UC_Register
+  (Login) as UC_Login
+  (Manage Profile) as UC_Profile
+  (Manage Delivery Addresses) as UC_Addresses
+
+  ' Browse & Search
+  (Browse Restaurants & Menus) as UC_Browse
+  (Search Food Items) as UC_Search
+  (Customize Items) as UC_Customize
+  (Manage Cart) as UC_Cart
+
+  ' Order Process
+  (Checkout) as UC_Checkout
+  (Place Order) as UC_Place
+  (Make Payment) as UC_Pay
+
+  ' Post-Order
+  (Track Order & Delivery) as UC_Track
+  (Receive Notifications) as UC_Notify
+
+  ' Order Management
+  (View Order History) as UC_History
+  (Cancel Order) as UC_Cancel
+  (Request Refund) as UC_Refund
+  (Rate & Review Order) as UC_Review
+}
+
+' === Direct Customer Associations (Primary Use Cases) ===
+C --> UC_Register
+C --> UC_Login
+C --> UC_Profile
+C --> UC_Browse
+C --> UC_Search
+C --> UC_Customize
+C --> UC_Cart
+C --> UC_Place
+C --> UC_Track
+C --> UC_History
+C --> UC_Addresses
+C --> UC_Cancel
+C --> UC_Refund
+C --> UC_Review
+
+' === Include relationships (mandatory subflows) ===
+' Checkout must include cart (cannot checkout without items in cart)
+UC_Checkout ..> UC_Cart : <<include>>
+
+' Checkout must include payment
+UC_Checkout ..> UC_Pay : <<include>>
+
+' Place Order includes the checkout process
+UC_Place ..> UC_Checkout : <<include>>
+
+' === Extend relationships (optional/conditional behavior) ===
+UC_Addresses ..> UC_Checkout : <<extend>>
+
+' Customer can optionally search while browsing
+UC_Search ..> UC_Browse : <<extend>>
+
+' Customer can optionally customize items when browsing
+UC_Customize ..> UC_Browse : <<extend>>
+
+' Customer can optionally cancel from order history
+UC_Cancel ..> UC_History : <<extend>>
+
+' Customer can optionally request refund from order history
+UC_Refund ..> UC_History : <<extend>>
+
+' Customer can optionally rate/review from order history
+UC_Review ..> UC_History : <<extend>>
+
+' Notifications can optionally extend tracking (system sends updates)
+UC_Notify ..> UC_Track : <<extend>>
+
+@enduml

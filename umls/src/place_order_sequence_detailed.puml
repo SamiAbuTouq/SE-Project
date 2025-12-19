@@ -1,0 +1,109 @@
+@startuml Place_Order_Sequence_Detailed_Stakeholder
+!theme plain
+skinparam shadowing true
+skinparam roundcorner 12
+skinparam ArrowThickness 1.5
+skinparam defaultTextAlignment center
+
+title Place Order – Detailed Sequence Diagram (Stakeholder View)\nOnline Food Ordering System\nVersion 1.0 | December 2025
+
+actor Customer
+participant "Online Food Ordering System" as System
+participant "Payment Gateway" as PaymentGateway
+participant Restaurant
+participant "Notification Service" as NotificationService
+
+== Order Configuration ==
+Customer -> System : [1] Browse menu & select items
+System -> System : Validate item availability
+note right: Real-time availability check\nduring browsing
+System --> Customer : Display items with prices & availability
+
+Customer -> System : [2] Add items to cart
+System -> System : Re-validate item availability
+note right: Final validation before\nadding to cart
+alt Items available
+    System --> Customer : Items added to cart (success)
+else Items unavailable
+    System --> Customer : Show unavailability message
+    Customer -> System : Select alternative items
+end
+
+opt Apply Coupon
+    Customer -> System : Enter coupon code
+    System -> System : Validate coupon
+    alt Coupon valid
+        System --> Customer : Discount applied (amount saved)
+    else Coupon invalid
+        System --> Customer : Coupon error message (reason)
+    end
+end
+
+Customer -> System : [3] Proceed to checkout
+System --> Customer : Request delivery details
+
+Customer -> System : [4] Enter/select delivery address
+System -> System : Validate delivery address
+note right: Check serviceability,\ndelivery zones, and distance
+alt Address serviceable
+    System --> Customer : Address confirmed (estimated delivery time)
+else Address not serviceable
+    System --> Customer : Service unavailable message (reason)
+    Customer -> System : Enter different address
+end
+
+opt Schedule Order
+    Customer -> System : Select delivery time
+    System --> Customer : Confirm scheduled time
+end
+
+opt Add Tip
+    Customer -> System : Add tip for driver
+    System --> Customer : Tip added to total (updated amount)
+end
+
+System -> System : Calculate final total
+note right: Subtotal + Tax + Delivery Fee\n+ Tip - Discount
+System --> Customer : [5] Display order summary & total
+
+== Payment ==
+Customer -> System : [6] Confirm order & initiate payment
+System -> PaymentGateway : [7] Process payment request
+note right: Timeout: 30s
+
+alt Payment successful
+    PaymentGateway --> System : [8] Payment confirmation (transaction ID)
+    
+    == Order Fulfillment ==
+    System -> System : [9] Create order record (Confirmed)
+    System -> Restaurant : [10] Send order details
+    note right: Timeout: 60s for\nrestaurant acknowledgment
+    
+    alt Restaurant accepts
+        Restaurant --> System : Order accepted (preparation time)
+        
+        par Notifications
+            System -> NotificationService : [11] Send customer confirmation
+            NotificationService --> Customer : Order confirmed (Order ID, ETA)
+            System -> NotificationService : [12] Send restaurant alert
+            NotificationService --> Restaurant : New order notification
+        end
+        
+    else Restaurant doesn't respond
+        System --> System : Auto-escalation triggered
+        note right: Retry or reassign\nto another restaurant
+        System --> Customer : Delay notification (issue being resolved)
+    else Restaurant rejects
+        Restaurant --> System : Order rejected (reason)
+        System -> PaymentGateway : Initiate refund
+        PaymentGateway --> System : Refund processed
+        System --> Customer : Order cancelled (refund notification)
+    end
+    
+else Payment failed
+    PaymentGateway --> System : Payment failure (error code)
+    System --> Customer : Payment failed message (reason)
+    Customer -> System : Retry payment or cancel
+end
+
+@enduml

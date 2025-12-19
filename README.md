@@ -6,7 +6,7 @@
   - _20220719 Sami Khaled Abu Touq_
   - _20220179 Yazan Ahmad Bedair_
   - _20220501 Abdullah Suleiman Jaradat_
-  - _20220659 Malik Mahmoud Haj Asad_
+  - _20220659 Malek Mahmoud Haj Asad_
 - **Course Code, Semester, Instructor:**
   - _13477, first semester, Dr. Samer Elkababji_
 
@@ -27,11 +27,17 @@ umls/src          - Source code files
 
 ## 5. Team Contributions
 
-Example format:
-
 - **Sami Abu Touq:**
 - **Yazan Bedair:**
 - **Abdullah Jaradat**
 - **Malek Haj Asad:**
 
 ### Collaboration Workflow
+
+- Everyone syncs main before starting work
+- Each member works on their own branch
+- Commit changes with meaningful commits
+- Push the branch to GitHub
+- Open a Pull Request (PR) from the branch
+- At least one teammate reviews before merging
+- Merge into main, then delete the feature branch

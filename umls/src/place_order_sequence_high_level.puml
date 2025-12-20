@@ -5,7 +5,7 @@ skinparam roundcorner 12
 skinparam ArrowThickness 1.5
 skinparam defaultTextAlignment center
 
-title Place Order – High-Level Sequence Diagram (Stakeholder View)\nOnline Food Ordering System\nVersion 1.0 | December 2025
+title Place Order – High-Level Sequence Diagram (Stakeholder View)\nOnline Food Ordering System
 
 actor Customer
 participant "Online Food Ordering System" as System
@@ -55,7 +55,7 @@ else Payment failed
     PaymentGateway --> System : [6] Payment failed (error)
     deactivate PaymentGateway
     System --> Customer : Payment error (retry option)
-    note left: Customer can retry payment\nor cancel order
+    ' note left: Customer can retry payment\nor cancel order
 end
 
 deactivate System

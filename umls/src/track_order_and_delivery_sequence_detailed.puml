@@ -1,0 +1,137 @@
+@startuml Track_Order_Delivery_Sequence_Detailed
+!theme plain
+skinparam shadowing true
+skinparam roundcorner 12
+skinparam ArrowThickness 1.5
+skinparam defaultTextAlignment center
+
+title Track Order & Delivery – Detailed Sequence Diagram (Developer View)\nOnline Food Ordering System\nVersion 1.0 | December 2025
+
+actor Customer
+participant "Online Food Ordering System" as System
+participant Restaurant
+participant "Delivery Management" as DeliveryMgmt
+participant "Delivery Driver" as Driver
+participant "Location Service" as LocationService
+participant "Notification Service" as NotificationService
+
+== Order Status Inquiry ==
+Customer -> System : [1] Request order status (Order ID)
+activate System
+System -> System : Authenticate customer
+note right: Verify customer owns\nthis order
+System -> System : Retrieve order details
+note right: Query order status,\ntimestamps, and history
+
+alt Order found & authorized
+    System --> Customer : [2] Display order status
+    note left: Status: Confirmed, Preparing,\nReady, Out for Delivery,\nDelivered, Cancelled
+else Order not found
+    System --> Customer : Order not found error
+else Unauthorized access
+    System --> Customer : Access denied error
+end
+
+== Real-Time Status Updates ==
+opt Order in Preparation
+    System -> Restaurant : Query preparation status
+    activate Restaurant
+    Restaurant --> System : Current preparation stage
+    note right: e.g., "Cooking - 15 min remaining"
+    deactivate Restaurant
+    System --> Customer : [3] Preparation details (ETA)
+end
+
+opt Order Ready for Pickup
+    Restaurant -> System : [4] Mark order ready
+    System -> DeliveryMgmt : [5] Request driver assignment
+    activate DeliveryMgmt
+    DeliveryMgmt -> DeliveryMgmt : Find available driver
+    note right: Match based on location,\nrating, and availability
+    
+    alt Driver available
+        DeliveryMgmt -> Driver : [6] Assign delivery task
+        activate Driver
+        Driver --> DeliveryMgmt : Assignment accepted
+        DeliveryMgmt --> System : Driver assigned (Driver ID, ETA)
+        deactivate DeliveryMgmt
+        
+        System -> NotificationService : [7] Send customer update
+        activate NotificationService
+        NotificationService --> Customer : Driver assigned (Name, Photo, ETA)
+        deactivate NotificationService
+        
+    else No driver available
+        DeliveryMgmt --> System : No driver available
+        deactivate DeliveryMgmt
+        System -> NotificationService : Send delay notification
+        activate NotificationService
+        NotificationService --> Customer : Delivery delay alert
+        deactivate NotificationService
+    end
+end
+
+== Live Tracking ==
+opt Customer requests live tracking
+    Customer -> System : [8] Enable live tracking
+    
+    loop Every 10-30 seconds (while out for delivery)
+        System -> LocationService : [9] Request driver location
+        activate LocationService
+        LocationService -> Driver : Query GPS coordinates
+        Driver --> LocationService : Current location (lat, lng)
+        LocationService --> System : Location data (timestamp)
+        deactivate LocationService
+        System -> System : Calculate ETA & distance
+        note right: Use routing algorithms\nand traffic data
+        System --> Customer : [10] Update map & ETA
+        note left: Real-time map display\nwith driver marker
+    end
+end
+
+== Status Change Notifications ==
+Driver -> System : [11] Update status: "Picked up from restaurant"
+System -> NotificationService : Trigger pickup notification
+activate NotificationService
+NotificationService --> Customer : Order picked up (updated ETA)
+deactivate NotificationService
+
+Driver -> System : [12] Update status: "Arriving soon"
+note right: Triggered when within\n500m of delivery address
+System -> NotificationService : Trigger arrival notification
+activate NotificationService
+NotificationService --> Customer : Driver arriving in 2-3 minutes
+deactivate NotificationService
+
+== Delivery Completion ==
+Driver -> System : [13] Update status: "Delivered"
+System -> System : Update order status to "Delivered"
+System -> System : Record delivery timestamp
+
+par Confirmations
+    System -> NotificationService : [14] Send delivery confirmation
+    activate NotificationService
+    NotificationService --> Customer : Order delivered (timestamp)
+    deactivate NotificationService
+    
+    System -> NotificationService : [15] Send completion alert
+    activate NotificationService
+    NotificationService --> Restaurant : Delivery completed
+    deactivate NotificationService
+end
+
+System --> Customer : [16] Request rating & feedback
+note left: Prompt for driver\nand food ratings
+
+opt Customer provides feedback
+    Customer -> System : [17] Submit rating & review
+    System -> System : Store feedback
+    System --> Driver : Update driver rating
+    System --> Restaurant : Update restaurant rating
+    System --> Customer : Thank you message
+end
+
+deactivate System
+deactivate Customer
+
+@enduml

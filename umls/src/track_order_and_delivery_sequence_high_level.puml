@@ -1,0 +1,53 @@
+@startuml Track_Order_Sequence_High_Level_Stakeholder
+!theme plain
+skinparam shadowing true
+skinparam roundcorner 12
+skinparam ArrowThickness 1.5
+skinparam defaultTextAlignment center
+
+title Track Order & Delivery – High-Level Sequence Diagram (Stakeholder View)\nOnline Food Ordering System
+
+actor Customer
+participant "Online Food Ordering System" as System
+participant Restaurant
+actor "Delivery Driver" as Driver
+participant "Notification Service" as NotificationService
+
+== Preparation Phase ==
+activate Customer
+Customer -> System : [1] View Order Status
+activate System
+System --> Customer : Display "Preparing Food"
+
+Restaurant -> System : [2] Mark Order "Ready"
+activate Restaurant
+System -> Driver : [3] Assign Driver
+deactivate Restaurant
+
+== In Transit Phase ==
+activate Driver
+Driver -> System : [4] Pick up Order
+System -> NotificationService : [5] Notify Customer
+activate NotificationService
+NotificationService --> Customer : "Driver is on the way"
+deactivate NotificationService
+
+loop Delivery Route
+    Driver -> System : [6] Update Location
+    System --> Customer : Update Live Map & ETA
+end
+
+== Delivery Phase ==
+Driver -> System : [7] Mark Delivered
+deactivate Driver
+
+System -> NotificationService : [8] Send Success Alert
+activate NotificationService
+NotificationService --> Customer : "Order Delivered"
+deactivate NotificationService
+
+System --> Customer : [9] Request Feedback
+deactivate System
+deactivate Customer
+
+@enduml

@@ -1,0 +1,64 @@
+@startuml Place_Order_Sequence_High_Level_Final
+!theme plain
+skinparam shadowing true
+skinparam roundcorner 12
+skinparam ArrowThickness 1.5
+skinparam defaultTextAlignment center
+
+title Place Order – High-Level Sequence Diagram (Stakeholder View)\nOnline Food Ordering System
+
+actor Customer
+participant "Online Food Ordering System" as System
+participant "Payment Gateway" as PaymentGateway
+participant Restaurant
+participant "Notification Service" as NotificationService
+
+== Order Configuration ==
+activate Customer
+Customer -> System : [1] Select items & manage cart
+activate System
+System --> Customer : Display cart
+Customer -> System : [2] Select delivery address
+System --> Customer : [3] Display order summary & total
+
+== Payment ==
+Customer -> System : [4] Confirm order & pay
+System -> PaymentGateway : [5] Process payment
+note right: Timeout: 30s
+activate PaymentGateway
+
+alt Payment successful
+    PaymentGateway --> System : [6] Payment successful (transaction ID)
+    deactivate PaymentGateway
+
+    == Order Fulfillment ==
+    System -> System : [7] Create order record
+    System -> Restaurant : [8] Send order details
+    note right: Timeout: 60s
+    activate Restaurant
+    Restaurant --> System : Acknowledged
+    deactivate Restaurant
+
+    par Notifications
+        System -> NotificationService : [9] Send customer confirmation
+        activate NotificationService
+        NotificationService --> Customer : Order confirmed (Order ID, ETA)
+        deactivate NotificationService
+        
+        System -> NotificationService : [10] Send restaurant alert
+        activate NotificationService
+        NotificationService --> Restaurant : Alert sent
+        deactivate NotificationService
+    end
+
+else Payment failed
+    PaymentGateway --> System : [6] Payment failed (error)
+    deactivate PaymentGateway
+    System --> Customer : Payment error (retry option)
+    ' note left: Customer can retry payment\nor cancel order
+end
+
+deactivate System
+deactivate Customer
+
+@enduml

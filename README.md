@@ -58,3 +58,14 @@ The following outlines each team member’s responsibilities and contributions t
 - Open a Pull Request (PR) from the branch
 - At least one teammate reviews before merging
 - Merge into main, then delete the feature branch
+
+Just so you know, these diagrams were made entirely based on my **genius instincts**.  
+UML? OMG? ISO? IEEE? Pfft… that’s cute, but I have my own **feelings-based methodology**. Who needs rules when you have me?
+
+Don’t worry—it’s **definitely not the diagrams’ fault**. They were created based on my feelings, my instincts, and—according to **Abeer**—my intuition rivals that of **Elissa** herself. And trust me, my feelings **never fail**.
+
+So, in short: **blame the universe, not my diagrams** 😏  
+These diagrams are **art**. Chaos? Maybe. Wrong? Never.  
+
+**Enjoy the masterpiece!**
+

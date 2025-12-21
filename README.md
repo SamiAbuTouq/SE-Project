@@ -31,23 +31,19 @@ _with A short description of what each diagram represents in the context of the 
 
 ## 5. Team Contributions
 ```to be updated ```
-
 The following outlines each team member’s responsibilities and contributions to the project:
 - **Sami Abu Touq**
   - Designed and implemented UML sequence diagrams:
     - Place Order (High-Level and Detailed)
     - Track Order and Delivery (High-Level and Detailed)
-
 - **Yazan Bedair**
   - Developed tabular use case descriptions:
     - Place Order
     - Track Order and Delivery
-
 - **Abdullah Jaradat**
   - Created core system diagrams:
     - General Use Case Diagram
     - System Context Diagram
-
 - **Malek Haj Asad**
   - Defined and documented primary use cases:
     - Place Order Use Case
@@ -55,7 +51,6 @@ The following outlines each team member’s responsibilities and contributions t
 
 
 ### Collaboration Workflow
-
 - Everyone syncs main before starting work
 - Each member works on their own branch
 - Commit changes with meaningful commits

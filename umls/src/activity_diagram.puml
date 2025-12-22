@@ -1,0 +1,244 @@
+@startuml Activity_Diagram_Order_Processing_Workflow
+title **Activity Diagram** - Order Processing Workflow\nOnline Food Ordering System
+
+skinparam {
+    BackgroundColor white
+    Shadowing true
+    DefaultFontName Arial
+    DefaultFontSize 10
+    DefaultFontColor #34495E
+    ArrowThickness 1.5
+    ArrowColor #2C3E50
+    ActivityBackgroundColor #E8F6F3
+    ActivityBorderColor #16A085
+    ActivityBorderThickness 2
+    ActivityFontSize 10
+    DiamondBackgroundColor #FEF9E7
+    DiamondBorderColor #F39C12
+    DiamondBorderThickness 2
+    PartitionBorderColor #34495E
+    PartitionBorderThickness 2
+    PartitionBackgroundColor #FDFEFE
+}
+
+' ============================================================================
+' PARTITIONS (Swimlanes)
+' ============================================================================
+|#E8F8F5|Customer|
+|#EBF5FB|System|
+|#FEF5E7|Payment Gateway|
+|#FDF2E9|Restaurant|
+|#F4ECF7|Delivery Agent|
+
+' ============================================================================
+' CUSTOMER INTERACTION
+' ============================================================================
+|Customer|
+start
+:Browse Restaurant Menu;
+:Select Food Items;
+:Add Items to Cart;
+
+repeat
+    :Review Cart;
+    if (Modify Cart?) then (yes)
+        :Update Quantities/\nRemove Items;
+    endif
+repeat while (Continue Shopping?) is (yes)
+->no;
+
+:Proceed to Checkout;
+:Select Delivery Address;
+
+|System|
+:Validate Delivery Address;
+
+if (Address Serviceable?) then (no)
+    :Display Service\nUnavailability Message;
+    |Customer|
+    stop
+else (yes)
+endif
+
+:Calculate Order Total\n(Items + Tax + Delivery Fee);
+
+|Customer|
+:Review Order Summary;
+:Select Payment Method;
+
+' ============================================================================
+' PAYMENT PROCESSING
+' ============================================================================
+|System|
+:Validate Order Details;
+
+if (Validation Successful?) then (no)
+    :Display Validation Error;
+    |Customer|
+    stop
+else (yes)
+endif
+
+|Payment Gateway|
+:Process Payment Transaction;
+
+if (Payment Authorized?) then (no)
+    |System|
+    :Log Payment Failure;
+    :Update Order Status:\n**PAYMENT_FAILED**;
+    |Customer|
+    :Notify Payment Failure;
+    stop
+else (yes)
+    :Return Transaction ID;
+endif
+
+' ============================================================================
+' ORDER CREATION & NOTIFICATION
+' ============================================================================
+|System|
+:Generate Order ID;
+:Store Transaction Details;
+:Update Order Status:\n**CONFIRMED**;
+
+fork
+    :Send Order Confirmation\nto Customer;
+    note right: Email/SMS/Push\nwith Order ID & ETA
+fork again
+    |Restaurant|
+    :Receive Order Notification;
+    note right: Order details,\naddress, special\ninstructions
+fork again
+    |System|
+    :Log Order Event;
+end fork
+
+' ============================================================================
+' RESTAURANT PROCESSING
+' ============================================================================
+|Restaurant|
+:Review Order Details;
+
+if (Accept Order?) then (no)
+    :Reject Order\n(Specify Reason);
+    
+    |System|
+    :Update Order Status:\n**CANCELLED**;
+    
+    fork
+        |Payment Gateway|
+        :Initiate Refund Process;
+        :Process Refund;
+    fork again
+        |System|
+        :Notify Customer\n(Order Cancelled);
+    end fork
+    
+    |Customer|
+    stop
+else (yes)
+    :Accept Order;
+endif
+
+|System|
+:Update Order Status:\n**PREPARING**;
+:Estimate Preparation Time;
+:Notify Customer\n(Order Accepted);
+
+|Restaurant|
+:Prepare Food Items;
+:Verify Order Completeness;
+:Package Order;
+:Mark as Ready for Pickup;
+
+|System|
+:Update Order Status:\n**READY**;
+
+' ============================================================================
+' DELIVERY ASSIGNMENT
+' ============================================================================
+fork
+    :Search Available\nDelivery Agents;
+    :Calculate Optimal Route;
+    :Assign to Nearest Agent;
+    
+    |Delivery Agent|
+    :Receive Delivery Assignment;
+    
+    if (Accept Assignment?) then (no)
+        |System|
+        :Reassign to\nNext Available Agent;
+    else (yes)
+    endif
+fork again
+    :Notify Customer\n(Order Ready);
+end fork
+
+' ============================================================================
+' DELIVERY PROCESS
+' ============================================================================
+|Delivery Agent|
+:Navigate to Restaurant;
+:Arrive at Restaurant;
+:Collect Order Package;
+:Confirm Pickup;
+
+|System|
+:Update Order Status:\n**OUT_FOR_DELIVERY**;
+:Notify Customer\n(Driver En Route);
+
+|Delivery Agent|
+:Navigate to Customer Location;
+
+repeat
+    :Update Real-time Location;
+    |System|
+    :Broadcast Location Updates;
+    |Delivery Agent|
+repeat while (Reached Destination?) is (no)
+->yes;
+
+:Contact Customer;
+:Deliver Order;
+
+|Customer|
+:Receive Order;
+
+if (Cash on Delivery?) then (yes)
+    :Make Payment;
+    |Delivery Agent|
+    :Collect Cash Payment;
+    :Confirm Payment Received;
+endif
+
+|Delivery Agent|
+:Mark Order as Delivered;
+
+' ============================================================================
+' ORDER COMPLETION
+' ============================================================================
+|System|
+:Update Order Status:\n**COMPLETED**;
+:Record Delivery Timestamp;
+
+fork
+    :Send Delivery Confirmation\nto Customer;
+fork again
+    :Notify Restaurant\n(Delivery Complete);
+fork again
+    :Calculate Agent Earnings;
+fork again
+    :Request Feedback/Rating;
+end fork
+
+|Customer|
+if (Provide Rating?) then (yes)
+    :Submit Rating & Review;
+    |System|
+    :Store Feedback;
+    :Update Restaurant &\nAgent Ratings;
+endif
+
+stop
+
+@enduml

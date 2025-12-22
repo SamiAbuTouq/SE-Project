@@ -1,0 +1,175 @@
+@startuml Order_Status_State_Diagram
+
+title State Machine Diagram - Order Status Lifecycle\nOnline Food Ordering System
+
+skinparam {
+    BackgroundColor white
+    Shadowing true
+    DefaultFontName Arial
+    DefaultFontSize 11
+    DefaultFontColor #2C3E50
+    ArrowThickness 1.5
+    ArrowColor #34495E
+}
+
+skinparam state {
+    BackgroundColor #EBF5FB
+    BorderColor #3498DB
+    BorderThickness 2
+    StartColor #27AE60
+    EndColor #E74C3C
+}
+
+' ============================================================================
+' INITIAL STATE
+' ============================================================================
+[*] --> CartActive : Customer adds item to cart
+
+' ============================================================================
+' CART STATES (Composite State)
+' ============================================================================
+state "Shopping Cart" as CartActive {
+    [*] --> ItemsInCart
+    
+    state "Items In Cart" as ItemsInCart
+    state "Cart Modified" as CartModified
+    state "Cart Reviewed" as CartReviewed
+    
+    ItemsInCart --> CartModified : updateCartItem() /\nrecalculate total
+    CartModified --> ItemsInCart : itemUpdated
+    ItemsInCart --> CartReviewed : proceedToCheckout()
+    CartReviewed --> ItemsInCart : continueShoppingSelected
+}
+
+CartActive --> OrderPlaced : confirmOrder() /\ngenerate OrderID
+CartActive --> [*] : cartAbandoned [timeout > 30min] /\nrelease items
+
+' ============================================================================
+' ORDER PLACED STATE
+' ============================================================================
+state "Order Placed" as OrderPlaced {
+    state "Awaiting Payment" as AwaitingPayment
+    state "Payment Processing" as PaymentProcessing
+    state "Payment Verified" as PaymentVerified
+    
+    [*] --> AwaitingPayment
+    AwaitingPayment --> PaymentProcessing : initiatePayment()
+    PaymentProcessing --> PaymentVerified : paymentSuccess /\nstore transaction
+    PaymentProcessing --> AwaitingPayment : paymentFailed /\nlog failure
+}
+
+OrderPlaced --> PendingConfirmation : paymentCompleted /\nnotify restaurant
+OrderPlaced --> Cancelled : paymentTimeout [time > 15min] /\nrelease order
+OrderPlaced --> Cancelled : customerCancelRequest [within 2min]
+
+' ============================================================================
+' CONFIRMATION STATE
+' ============================================================================
+state "Pending Confirmation" as PendingConfirmation
+note right of PendingConfirmation
+  Waiting for restaurant
+  to accept/reject order
+end note
+
+PendingConfirmation --> Confirmed : restaurantAccepts /\nupdate status, notify customer
+PendingConfirmation --> Rejected : restaurantRejects /\ninitiate refund
+PendingConfirmation --> Cancelled : confirmationTimeout [time > 10min] /\nauto-refund
+
+' ============================================================================
+' CONFIRMED STATE
+' ============================================================================
+state "Confirmed" as Confirmed
+Confirmed --> Preparing : restaurantStartsPreparation /\nupdate ETA
+
+' ============================================================================
+' PREPARATION STATE (Composite)
+' ============================================================================
+state "Preparing" as Preparing {
+    state "In Kitchen" as InKitchen
+    state "Quality Check" as QualityCheck
+    state "Packaging" as Packaging
+    
+    [*] --> InKitchen
+    InKitchen --> QualityCheck : cookingComplete
+    QualityCheck --> Packaging : qualityApproved
+    QualityCheck --> InKitchen : qualityFailed /\nremake item
+    Packaging --> [*] : packagingComplete
+}
+
+Preparing --> ReadyForPickup : preparationComplete /\nassign delivery agent
+
+' ============================================================================
+' READY FOR PICKUP STATE
+' ============================================================================
+state "Ready For Pickup" as ReadyForPickup
+note right of ReadyForPickup
+  Order packaged and
+  awaiting delivery agent
+end note
+
+ReadyForPickup --> AssignedToAgent : agentAssigned /\nnotify agent
+
+' ============================================================================
+' DELIVERY STATES (Composite)
+' ============================================================================
+state "Out For Delivery" as OutForDelivery {
+    state "Agent Assigned" as AssignedToAgent
+    state "Agent En Route to Restaurant" as EnRouteToRestaurant
+    state "At Restaurant" as AtRestaurant
+    state "Order Picked Up" as PickedUp
+    state "En Route to Customer" as EnRouteToCustomer
+    state "Arrived at Location" as ArrivedAtLocation
+    
+    [*] --> AssignedToAgent
+    AssignedToAgent --> EnRouteToRestaurant : agentAcceptsAssignment
+    EnRouteToRestaurant --> AtRestaurant : agentArrivesAtRestaurant
+    AtRestaurant --> PickedUp : orderCollected /\nverify items
+    PickedUp --> EnRouteToCustomer : agentDepartsRestaurant /\nstart tracking
+    EnRouteToCustomer --> ArrivedAtLocation : agentArrivesAtCustomer
+}
+
+OutForDelivery --> Delivered : deliveryConfirmed /\ncomplete transaction
+
+' ============================================================================
+' TERMINAL STATES
+' ============================================================================
+state "Delivered" as Delivered #90EE90
+note right of Delivered
+  Order successfully
+  delivered to customer
+end note
+
+Delivered --> Completed : customerConfirmsReceipt /\nrequest feedback
+
+state "Completed" as Completed #98FB98
+Completed --> [*]
+
+state "Cancelled" as Cancelled #FFB6C1
+note left of Cancelled
+  Order cancelled by
+  customer, restaurant,
+  or system timeout
+end note
+
+Cancelled --> [*]
+
+state "Rejected" as Rejected #FFA07A
+note left of Rejected
+  Order rejected by
+  restaurant (unavailable
+  items, capacity, etc.)
+end note
+
+Rejected --> [*]
+
+' ============================================================================
+' EXCEPTION TRANSITIONS
+' ============================================================================
+Preparing --> Cancelled : criticalIssue /\nfull refund
+OutForDelivery --> DeliveryFailed : deliveryAttemptFailed [attempts >= 3]
+
+state "Delivery Failed" as DeliveryFailed #FFD700
+DeliveryFailed --> [*]
+
+
+@enduml

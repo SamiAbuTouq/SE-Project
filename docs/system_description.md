@@ -1,7 +1,3 @@
----
-title: "Online Food Ordering System"
-subtitle: "System Description Document"
----
 ## 1. Problem Statement
 
 Traditional food ordering processes create challenges for customers (difficult menu discovery and order tracking), restaurants (inefficient order management during peak hours), and delivery agents (lack of centralized assignment tools). The Online Food Ordering System provides a centralized web platform that digitizes the entire food ordering workflow, reduces errors, provides real-time visibility, and enables efficient payment and delivery coordination.

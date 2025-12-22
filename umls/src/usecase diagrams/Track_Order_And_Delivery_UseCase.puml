@@ -1,7 +1,4 @@
 @startuml Track_Order_And_Delivery_UseCase
-' UML 2.x compliant Use Case Diagram (OMG UML / ISO/IEC 19505)
-' Individual use case: Track Order & Delivery (Online Food Ordering System)
-
 left to right direction
 !theme plain
 skinparam shadowing true
@@ -11,7 +8,7 @@ skinparam packageStyle rectangle
 skinparam defaultTextAlignment center
 skinparam ArrowThickness 1.2
 
-title Use Case Diagram - Track Order & Delivery\n(Online Food Ordering System)
+title Use Case Diagram - Track Order & Delivery\nOnline Food Ordering System
 
 ' ===== Actors (external to the system boundary) =====
 actor Customer as C

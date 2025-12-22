@@ -5,8 +5,7 @@ skinparam roundcorner 12
 skinparam ArrowThickness 1.5
 skinparam defaultTextAlignment center
 
-title Place Order – Detailed Sequence Diagram (Stakeholder View)\nOnline Food Ordering System\nVersion 1.0 | December 2025
-
+title Place Order – Detailed Sequence Diagram (Stakeholder View)\nOnline Food Ordering System
 actor Customer
 participant "Online Food Ordering System" as System
 participant "Payment Gateway" as PaymentGateway

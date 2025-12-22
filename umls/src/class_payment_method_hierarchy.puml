@@ -1,0 +1,175 @@
+@startuml Payment_Method_Hierarchy
+
+!theme plain
+skinparam shadowing true
+skinparam roundcorner 8
+skinparam classAttributeIconSize 0
+
+title Diagram 2: Payment Method Hierarchy\n(Generalization/Inheritance)
+
+' =========================
+' Abstract Payment Method
+' =========================
+
+abstract class PaymentMethod {
+  # paymentMethodId: String
+  # isActive: Boolean
+  # createdAt: DateTime
+  # lastUsed: DateTime
+  --
+  {abstract} + authorize(amount: Decimal): Boolean
+  {abstract} + charge(amount: Decimal): Boolean
+  {abstract} + refund(amount: Decimal): Boolean
+  + getDetails(): String
+  + deactivate(): void
+}
+
+' =========================
+' Concrete Payment Methods
+' =========================
+
+class CreditCardPayment {
+  - cardNumber: String
+  - expiryDate: Date
+  - cvv: String
+  - cardholderName: String
+  - cardType: String
+  - billingAddress: Address
+  --
+  + authorize(amount: Decimal): Boolean
+  + charge(amount: Decimal): Boolean
+  + refund(amount: Decimal): Boolean
+  + validate3DSecure(): Boolean
+  + checkCreditLimit(): Boolean
+}
+
+class DebitCardPayment {
+  - cardNumber: String
+  - expiryDate: Date
+  - cvv: String
+  - bankName: String
+  - accountBalance: Decimal
+  --
+  + authorize(amount: Decimal): Boolean
+  + charge(amount: Decimal): Boolean
+  + refund(amount: Decimal): Boolean
+  + checkBalance(): Decimal
+  + verifyPIN(pin: String): Boolean
+}
+
+class DigitalWalletPayment {
+  - walletId: String
+  - walletProvider: String
+  - balance: Decimal
+  - phoneNumber: String
+  --
+  + authorize(amount: Decimal): Boolean
+  + charge(amount: Decimal): Boolean
+  + refund(amount: Decimal): Boolean
+  + checkBalance(): Decimal
+  + addFunds(amount: Decimal): Boolean
+  + transferFunds(recipientId: String, amount: Decimal): Boolean
+}
+
+class CashOnDelivery {
+  - collectionStatus: String
+  - changeRequired: Decimal
+  - paymentCollectedBy: String
+  --
+  + authorize(amount: Decimal): Boolean
+  + charge(amount: Decimal): Boolean
+  + refund(amount: Decimal): Boolean
+  + confirmCollection(): void
+  + calculateChange(amountGiven: Decimal): Decimal
+}
+
+class BankTransfer {
+  - accountNumber: String
+  - bankName: String
+  - routingNumber: String
+  - transferReference: String
+  --
+  + authorize(amount: Decimal): Boolean
+  + charge(amount: Decimal): Boolean
+  + refund(amount: Decimal): Boolean
+  + verifyAccount(): Boolean
+  + generateTransferReceipt(): String
+}
+
+' =========================
+' Generalization Relationships
+' =========================
+
+PaymentMethod <|-- CreditCardPayment
+PaymentMethod <|-- DebitCardPayment
+PaymentMethod <|-- DigitalWalletPayment
+PaymentMethod <|-- CashOnDelivery
+PaymentMethod <|-- BankTransfer
+
+' =========================
+' Context Classes
+' =========================
+
+class Payment {
+  - paymentId: String
+  - amount: Decimal
+  - status: PaymentStatus
+  - transactionDate: DateTime
+  - transactionId: String
+  --
+  + processPayment(): Boolean
+  + refund(): Boolean
+  + getReceipt(): String
+}
+
+class Order {
+  - orderId: String
+  - orderDate: Date
+  - totalAmount: Decimal
+  --
+  + calculateTotal(): Decimal
+}
+
+class PaymentStatus <<enumeration>> {
+  PENDING
+  AUTHORIZED
+  COMPLETED
+  FAILED
+  REFUNDED
+  CANCELLED
+}
+
+' =========================
+' Relationships
+' =========================
+
+' Aggregation: Payment uses PaymentMethod (method can be reused)
+Payment "1" o-- "1" PaymentMethod : "uses >"
+
+' Composition: Order has Payment
+Order "1" *-- "1" Payment : "paid by >"
+
+' Dependency
+Payment ..> PaymentStatus : "uses"
+
+note right of PaymentMethod
+  Abstract class defining the
+  contract for all payment methods.
+  
+  Each payment method must implement:
+  - authorize()
+  - charge()
+  - refund()
+  
+  This allows new payment methods
+  to be added without changing
+  existing code (Open/Closed Principle)
+end note
+
+note bottom of CashOnDelivery
+  Special payment method where
+  payment is collected by the
+  delivery agent upon delivery
+end note
+
+@enduml

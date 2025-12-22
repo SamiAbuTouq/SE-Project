@@ -5,7 +5,7 @@ skinparam roundcorner 12
 skinparam ArrowThickness 1.5
 skinparam defaultTextAlignment center
 
-title Track Order & Delivery – Detailed Sequence Diagram (Developer View)\nOnline Food Ordering System\nVersion 1.0 | December 2025
+title Track Order & Delivery – Detailed Sequence Diagram (Developer View)\nOnline Food Ordering System
 
 actor Customer
 participant "Online Food Ordering System" as System

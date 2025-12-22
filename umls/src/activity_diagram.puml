@@ -1,5 +1,5 @@
-@startuml
-title **Activity Diagram**\nOrder Processing Workflow\nOnline Food Ordering System
+@startuml Activity_Diagram_Order_Processing_Workflow
+title **Activity Diagram** - Order Processing Workflow\nOnline Food Ordering System
 
 skinparam {
     BackgroundColor white

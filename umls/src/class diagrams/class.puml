@@ -1,0 +1,236 @@
+@startuml Online_Food_Ordering_System_Enhanced
+
+!theme plain
+
+skinparam shadowing true
+skinparam roundcorner 8
+skinparam classAttributeIconSize 0
+
+title Class Diagram\nOnline Food Ordering System
+
+' =========================
+' Value Objects
+' =========================
+
+class Address {
+  - street: String
+  - city: String
+  - state: String
+  - postalCode: String
+  - country: String
+  --
+  + getFullAddress(): String
+}
+
+' =========================
+' Abstract Base Class for Generalization (Inheritance)
+' =========================
+
+abstract class User {
+  - userId: String
+  - name: String
+  - email: String
+  - phone: String
+  --
+  + login(): Boolean
+  + logout(): void
+  + updateProfile(): void
+}
+
+' =========================
+' Core Classes
+' =========================
+
+class Customer {
+  - loyaltyPoints: Integer
+  --
+  + browseMenu(restaurantId: String): List<MenuItem>
+  + placeOrder(items: List<OrderItem>): Order
+  + trackOrder(orderId: String): OrderStatus
+  + rateDelivery(deliveryId: String, rating: Integer): void
+}
+
+class Restaurant {
+  - restaurantId: String
+  - name: String
+  - isOpen: Boolean
+  --
+  + receiveOrder(order: Order): void
+  + acceptOrder(orderId: String): Boolean
+  + rejectOrder(orderId: String): Boolean
+  + updateMenuAvailability(menuItemId: String, available: Boolean): void
+}
+
+class Menu {
+  - menuId: String
+  - name: String
+  - category: MenuCategory
+  --
+  + addItem(item: MenuItem): void
+  + removeItem(menuItemId: String): void
+  + getAvailableItems(): List<MenuItem>
+}
+
+class Order {
+  - orderId: String
+  - orderDate: Date
+  - status: OrderStatus
+  - totalAmount: Decimal
+  --
+  + calculateTotal(): Decimal
+  + updateStatus(status: OrderStatus): void
+  + getItems(): List<OrderItem>
+}
+
+class OrderItem {
+  - quantity: Integer
+  - unitPrice: Decimal
+  --
+  + calculateSubtotal(): Decimal
+}
+
+class MenuItem {
+  - menuItemId: String
+  - name: String
+  - description: String
+  - price: Decimal
+  - isAvailable: Boolean
+}
+
+class Payment {
+  - paymentId: String
+  - amount: Decimal
+  - paymentMethod: String
+  - status: PaymentStatus
+  --
+  + processPayment(): Boolean
+  + refund(): Boolean
+}
+
+class Delivery {
+  - deliveryId: String
+  - status: DeliveryStatus
+  - estimatedTime: DateTime
+  - actualDeliveryTime: DateTime
+  --
+  + assignAgent(agent: DeliveryAgent): void
+  + updateStatus(status: DeliveryStatus): void
+  + getEstimatedArrival(): DateTime
+}
+
+class DeliveryAgent {
+  - isAvailable: Boolean
+  - rating: Decimal
+  - vehicleType: String
+  --
+  + acceptDelivery(deliveryId: String): Boolean
+  + completeDelivery(deliveryId: String): void
+  + updateLocation(location: String): void
+}
+
+class DeliveryRating {
+  - ratingId: String
+  - score: Integer
+  - comment: String
+  - ratedAt: DateTime
+  --
+  + validate(): Boolean
+}
+
+' =========================
+' Enumerations (UML 2.x Strict - using <<enumeration>> stereotype)
+' =========================
+
+class OrderStatus <<enumeration>> {
+  PENDING
+  CONFIRMED
+  PREPARING
+  OUT_FOR_DELIVERY
+  DELIVERED
+  CANCELLED
+}
+
+class PaymentStatus <<enumeration>> {
+  PENDING
+  COMPLETED
+  FAILED
+  REFUNDED
+}
+
+class DeliveryStatus <<enumeration>> {
+  ASSIGNED
+  PICKED_UP
+  IN_TRANSIT
+  DELIVERED
+  FAILED
+}
+
+class MenuCategory <<enumeration>> {
+  APPETIZERS
+  MAINS
+  DESSERTS
+  BEVERAGES
+  SIDES
+}
+
+' =========================
+' GENERALIZATION (Inheritance) Relationships
+' Customer and DeliveryAgent inherit from abstract User class
+' =========================
+
+Customer --|> User
+DeliveryAgent --|> User
+
+' =========================
+' AGGREGATION Relationships (hollow diamond - parts can exist independently)
+' =========================
+
+' Restaurant aggregates DeliveryAgents (agents can work for multiple restaurants or exist independently)
+Restaurant "1" o-- "0..*" DeliveryAgent : "partners with >"
+
+' =========================
+' COMPOSITION Relationships (filled diamond - parts cannot exist without the whole)
+' =========================
+
+' Menu structure - menus and items cannot exist without restaurant
+Restaurant "1" *-- "1..*" Menu : "has >"
+Menu "1" *-- "0..*" MenuItem : "contains >"
+
+' Order composition - order items cannot exist without order
+Order "1" *-- "1..*" OrderItem : "contains >"
+
+' =========================
+' Association Relationships
+' =========================
+
+' Address associations (extracted value object)
+Customer "1" -- "1..*" Address : "has"
+Restaurant "1" -- "1" Address : "located at"
+
+' Core order flow
+Customer "1" -- "0..*" Order : "places >"
+Restaurant "1" -- "0..*" Order : "< receives"
+
+' Order item reference
+OrderItem "1" -- "1" MenuItem : "refers to >"
+
+' Payment and Delivery
+Order "1" -- "1" Payment : "paid by >"
+Order "1" -- "0..1" Delivery : "fulfilled by >"
+Delivery "1" -- "1" DeliveryAgent : "assigned to >"
+
+' Customer-DeliveryAgent relationship (rating system)
+Customer "1" -- "0..*" DeliveryRating : "gives >"
+DeliveryAgent "1" -- "0..*" DeliveryRating : "< receives"
+Delivery "1" -- "0..1" DeliveryRating : "rated by >"
+
+' =========================
+' Dependencies (enumeration usage)
+' =========================
+
+Order ..> OrderStatus : "uses"
+Payment ..> PaymentStatus : "uses"
+Delivery ..> DeliveryStatus : "uses"
+Menu ..> MenuCategory : "uses"
+
+@enduml

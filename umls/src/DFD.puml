@@ -1,0 +1,121 @@
+@startuml DFD_Level1_Online_Food_Ordering_System_Improved
+
+title Data Flow Diagram Level 1 - Online Food Ordering System
+
+skinparam {
+    BackgroundColor white
+    Shadowing true
+    RoundCorner 12
+    DefaultFontName Arial
+    DefaultFontSize 12
+    DefaultFontColor #2C3E50
+    ArrowThickness 1.2
+    ArrowColor #34495E
+}
+
+' -----------------------------
+' External Entities
+' -----------------------------
+rectangle "Customer" as CUSTOMER #D6EAF8
+rectangle "Restaurant" as RESTAURANT #D6EAF8
+rectangle "Delivery Agent" as DELIVERY_AGENT #D6EAF8
+rectangle "Payment Gateway" as PAYMENT_GATEWAY #D6EAF8
+rectangle "Notification Service" as NOTIFICATION_SERVICE #D6EAF8
+
+' -----------------------------
+' Processes (rounded rectangles)
+' -----------------------------
+rectangle "1.0 User Management" as P1 #E8F8F5
+rectangle "2.0 Browse Menu" as P2 #E8F8F5
+rectangle "3.0 Cart Management" as P3 #E8F8F5
+rectangle "4.0 Order Processing" as P4 #E8F8F5
+rectangle "5.0 Payments" as P5 #E8F8F5
+rectangle "6.0 Restaurant Orders" as P6 #E8F8F5
+rectangle "7.0 Delivery Tracking" as P7 #E8F8F5
+rectangle "8.0 Notifications" as P8 #E8F8F5
+
+' -----------------------------
+' Data Stores
+' -----------------------------
+database "D1: Users" as D1 #FDEBD0
+database "D2: Restaurants & Menu" as D2 #FDEBD0
+database "D3: Shopping Carts" as D3 #FDEBD0
+database "D4: Orders" as D4 #FDEBD0
+database "D5: Payments" as D5 #FDEBD0
+database "D6: Delivery Data" as D6 #FDEBD0
+
+' -----------------------------
+' Customer interactions
+' -----------------------------
+CUSTOMER --> P1 : "Register / Login"
+P1 --> CUSTOMER : "Authenticated Session"
+
+CUSTOMER --> P2 : "Browse/Search Menu"
+P2 --> CUSTOMER : "Menu List"
+
+CUSTOMER --> P3 : "Add/Remove Items"
+P3 --> CUSTOMER : "Updated Cart"
+
+CUSTOMER --> P4 : "Place Order"
+P4 --> CUSTOMER : "Order Confirmation"
+
+CUSTOMER --> P5 : "Provide Payment Info"
+P5 --> CUSTOMER : "Payment Status"
+
+' -----------------------------
+' Restaurant interactions
+' -----------------------------
+RESTAURANT --> P6 : "Update Menu / Orders"
+P6 --> RESTAURANT : "Order Alerts / Status"
+
+' -----------------------------
+' Delivery interactions
+' -----------------------------
+DELIVERY_AGENT --> P7 : "Availability / Location"
+P7 --> DELIVERY_AGENT : "Delivery Assignment / Updates"
+
+' -----------------------------
+' External services
+' -----------------------------
+P5 --> PAYMENT_GATEWAY : "Payment Request"
+PAYMENT_GATEWAY --> P5 : "Authorization Result"
+
+P8 --> NOTIFICATION_SERVICE : "Notification Data"
+NOTIFICATION_SERVICE --> P8 : "Delivery Status / Alerts"
+
+' -----------------------------
+' Data Store operations
+' -----------------------------
+D1 --> P1 : "User Data"
+P1 --> D1 : "Store/Update User"
+
+D2 --> P2 : "Menu Data"
+P6 --> D2 : "Update Menu"
+
+D3 --> P3 : "Cart Items"
+P3 --> D3 : "Save Cart"
+P4 --> D3 : "Clear Cart"
+
+D4 --> P4 : "Order History"
+P4 --> D4 : "Save Order"
+
+D5 --> P5 : "Payment History"
+P5 --> D5 : "Store Payment"
+
+D6 --> P7 : "Delivery Info"
+P7 --> D6 : "Update Status"
+
+' -----------------------------
+' Inter-process flows
+' -----------------------------
+P1 ..> P2 : "Authenticated User"
+P2 ..> P3 : "Selected Items"
+P3 ..> P4 : "Cart Details"
+P4 ..> P5 : "Payment Required"
+P4 ..> P6 : "New Order"
+P4 ..> P8 : "Notify Parties"
+P6 ..> P7 : "Ready for Pickup"
+P7 ..> P4 : "Delivery Complete"
+P5 ..> P8 : "Payment Confirmation"
+
+@enduml

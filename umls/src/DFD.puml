@@ -1,6 +1,6 @@
-@startuml DFD_Level1_Online_Food_Ordering_System_Improved
+@startuml DFD_Online_Food_Ordering_System
 
-title Data Flow Diagram Level 1 - Online Food Ordering System
+title Data Flow Diagram\nOnline Food Ordering System
 
 skinparam {
     BackgroundColor white

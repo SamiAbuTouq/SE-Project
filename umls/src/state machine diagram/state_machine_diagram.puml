@@ -1,4 +1,4 @@
-@startuml Order_Status_State_Diagram
+@startuml state_machine_diagram
 
 title State Machine Diagram - Order Status Lifecycle\nOnline Food Ordering System
 

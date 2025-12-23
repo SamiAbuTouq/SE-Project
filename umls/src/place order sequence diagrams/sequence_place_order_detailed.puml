@@ -1,4 +1,4 @@
-@startuml Place_Order_Sequence_Detailed_Stakeholder
+@startuml sequence_place_order_detailed
 !theme plain
 skinparam shadowing true
 skinparam roundcorner 12

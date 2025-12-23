@@ -1,4 +1,4 @@
-@startuml User_Hierarchy_Generalization
+@startuml class_user_hierarchy_generalization
 
 !theme plain
 skinparam shadowing true

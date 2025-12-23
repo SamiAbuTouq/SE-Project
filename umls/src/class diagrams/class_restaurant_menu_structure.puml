@@ -1,4 +1,4 @@
-@startuml Restaurant_Menu_Structure
+@startuml class_restaurant_menu_structure
 
 !theme plain
 skinparam shadowing true

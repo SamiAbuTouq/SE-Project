@@ -1,4 +1,4 @@
-@startuml Group04_Customer_UseCase
+@startuml usecase_customer_only
 ' PlantUML (latest) - Customer Use Case Diagram (Customer ONLY)
 left to right direction
 

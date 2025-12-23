@@ -1,4 +1,4 @@
-@startuml Online_Food_Ordering_System_Context
+@startuml context
 !include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
 
 ' Enhanced styling

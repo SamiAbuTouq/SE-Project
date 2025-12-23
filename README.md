@@ -65,14 +65,14 @@
 
 /umls                                             - UML diagrams and models
     /out                                          - Generated output files as svg or HTML
-        /activity_diagram                         - Activity diagram outputs
         /class diagrams                           - Class diagram outputs
-        /context                                  - Context diagram outputs
-        /DFD                                      - Data Flow Diagram outputs
         /place order sequence diagrams            - Place order sequence diagram outputs
-        /State Machine Diagram                    - State machine diagram outputs
+        /state machine diagram                    - State machine diagram outputs
         /track order & delivery sequence diagrams - Track order & delivery sequence outputs
         /usecase diagrams                         - Use case diagram outputs
+        activity                                  - Activity diagram output
+        context                                   - Context diagram output
+        DFD                                       - Data Flow Diagram output
 
     /src                                          - Source UML files
         /class diagrams                           - Class diagram source files
@@ -80,7 +80,7 @@
         /state machine diagram                    - State machine diagram sources
         /track order & delivery sequence diagrams - Track order & delivery sequence sources
         /usecase diagrams                         - Use case diagrams source files
-        activity_diagram.puml                     - Activity diagram PlantUML source
+        activity.puml                             - Activity diagram PlantUML source
         context.puml                              - Context diagram PlantUML source
         DFD.puml                                  - Data Flow Diagram PlantUML source
 ```

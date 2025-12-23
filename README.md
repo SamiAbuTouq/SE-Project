@@ -93,37 +93,37 @@ The following outlines each team member's responsibilities and contributions to 
     - Place Order (High-Level and Detailed)
     - Track Order and Delivery (High-Level and Detailed)
   - Created behavioral modeling diagrams:
-    - State Machine Diagram (state_machine_diagram.puml)
-    - State Stimulus Table (state_stimulus_table.md)
-    - Activity Diagram (activity_diagram.puml)
+    - State Machine Diagram 
+    - State Stimulus Table 
+    - Activity Diagram 
 
 - **Yazan Bedair**
   - Developed tabular use case descriptions:
     - Place Order
     - Track Order and Delivery
   - Created structural diagrams:
-    - User Hierarchy Generalization Class Diagram (class_user_hierarchy_generalization.puml)
-    - Complete Class Diagram (class.puml)
+    - User Hierarchy Generalization Class Diagram 
+    - Complete Class Diagram 
   - Authored system documentation:
-    - System Description (system_description.md)
+    - System Description
 
 - **Abdullah Jaradat**
   - Created core system diagrams:
     - General Use Case Diagram
     - System Context Diagram
   - Developed specialized class diagrams:
-    - Restaurant Menu Structure Class Diagram (class_restaurant_menu_structure.puml)
-    - Order Management Composition Class Diagram (class_order_management_composition.puml)
+    - Restaurant Menu Structure Class Diagram 
+    - Order Management Composition Class Diagram 
   - Authored technical documentation:
-    - Diagram Explanations (diagram_explanations.md)
+    - Diagram Explanations
 
 - **Malek Haj Asad**
   - Defined and documented primary use cases:
     - Place Order Use Case
     - Track Order and Delivery Use Case
   - Created system analysis diagrams:
-    - Data Flow Diagram (DFD.puml)
-    - Payment Method Hierarchy Class Diagram (class_payment_method_hierarchy.puml)
+    - Data Flow Diagram 
+    - Payment Method Hierarchy Class Diagram 
 
 ## Collaboration Workflow
 - Everyone syncs main before starting work
@@ -132,6 +132,6 @@ The following outlines each team member's responsibilities and contributions to 
 - Push the branch to GitHub
 - Open a Pull Request (PR) from the branch
 - At least one teammate reviews before merging
-- Merge into main, then delete the feature branch
+- Merge into main, then delete the branch
 
 

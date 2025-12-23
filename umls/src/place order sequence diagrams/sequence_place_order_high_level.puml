@@ -1,4 +1,4 @@
-@startuml Place_Order_Sequence_High_Level_Final
+@startuml sequence_place_order_high_level
 !theme plain
 skinparam shadowing true
 skinparam roundcorner 12

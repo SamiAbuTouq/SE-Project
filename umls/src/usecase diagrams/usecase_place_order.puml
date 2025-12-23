@@ -1,4 +1,4 @@
-@startuml Place_Order_Use_Case_Diagram
+@startuml usecase_place_order
 left to right direction
 !theme plain
 skinparam shadowing true

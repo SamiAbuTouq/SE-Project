@@ -1,4 +1,4 @@
-@startuml Track_Order_And_Delivery_UseCase
+@startuml usecase_track_order_&_delivery
 left to right direction
 !theme plain
 skinparam shadowing true

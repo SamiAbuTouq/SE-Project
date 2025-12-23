@@ -1,4 +1,4 @@
-@startuml Order_Management_Composition
+@startuml class_order_management_composition
 
 !theme plain
 skinparam shadowing true

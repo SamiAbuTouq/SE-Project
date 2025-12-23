@@ -1,4 +1,4 @@
-@startuml Online_Food_Ordering_System_Enhanced
+@startuml class_online_food_ordering_system
 
 !theme plain
 

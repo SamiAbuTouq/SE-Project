@@ -1,4 +1,4 @@
-@startuml Track_Order_Sequence_High_Level_Stakeholder
+@startuml sequence_track_order_&_delivery_high_level
 !theme plain
 skinparam shadowing true
 skinparam roundcorner 12

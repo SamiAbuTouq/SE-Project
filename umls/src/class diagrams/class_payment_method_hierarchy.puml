@@ -1,4 +1,4 @@
-@startuml Payment_Method_Hierarchy
+@startuml class_payment_method_hierarchy
 
 !theme plain
 skinparam shadowing true

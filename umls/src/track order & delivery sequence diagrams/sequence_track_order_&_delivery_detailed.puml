@@ -1,4 +1,4 @@
-@startuml Track_Order_Delivery_Sequence_Detailed
+@startuml sequence_track_order_&_delivery_detailed
 !theme plain
 skinparam shadowing true
 skinparam roundcorner 12

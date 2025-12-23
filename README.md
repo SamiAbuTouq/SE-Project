@@ -86,7 +86,6 @@
 ```
 
 # 5. Team Contributions
-
 The following outlines each team member's responsibilities and contributions to the project:
 
 - **Sami Abu Touq**

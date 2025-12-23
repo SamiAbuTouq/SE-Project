@@ -134,3 +134,5 @@ The following outlines each team member's responsibilities and contributions to 
 - Open a Pull Request (PR) from the branch
 - At least one teammate reviews before merging
 - Merge into main, then delete the feature branch
+
+

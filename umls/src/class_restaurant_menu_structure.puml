@@ -1,0 +1,164 @@
+@startuml Restaurant_Menu_Structure
+
+!theme plain
+skinparam shadowing true
+skinparam roundcorner 8
+skinparam classAttributeIconSize 0
+
+title Diagram 3: Restaurant-Menu Structure\n(Composition and Aggregation)
+
+' =========================
+' Main Classes
+' =========================
+
+class Restaurant {
+  - restaurantId: String
+  - name: String
+  - isOpen: Boolean
+  - cuisineType: String
+  - rating: Decimal
+  - operatingHours: String
+  --
+  + receiveOrder(order: Order): void
+  + acceptOrder(orderId: String): Boolean
+  + rejectOrder(orderId: String): Boolean
+  + updateMenuAvailability(menuItemId: String, available: Boolean): void
+  + openRestaurant(): void
+  + closeRestaurant(): void
+}
+
+class Menu {
+  - menuId: String
+  - name: String
+  - category: MenuCategory
+  - isActive: Boolean
+  - effectiveDate: Date
+  - expiryDate: Date
+  --
+  + addItem(item: MenuItem): void
+  + removeItem(menuItemId: String): void
+  + getAvailableItems(): List<MenuItem>
+  + activateMenu(): void
+  + deactivateMenu(): void
+}
+
+class MenuItem {
+  - menuItemId: String
+  - name: String
+  - description: String
+  - price: Decimal
+  - isAvailable: Boolean
+  - preparationTime: Integer
+  - calories: Integer
+  - imageUrl: String
+  --
+  + updatePrice(newPrice: Decimal): void
+  + toggleAvailability(): void
+  + applyDiscount(percentage: Decimal): void
+}
+
+class RestaurantManager {
+  - managerId: String
+  - name: String
+  - permissions: List<String>
+  --
+  + manageMenu(): void
+  + updateMenuItem(itemId: String): void
+}
+
+class Address {
+  - street: String
+  - city: String
+  - state: String
+  - postalCode: String
+  - country: String
+  - latitude: Decimal
+  - longitude: Decimal
+  --
+  + getFullAddress(): String
+  + validate(): Boolean
+  + calculateDistance(other: Address): Decimal
+}
+
+class Ingredient {
+  - ingredientId: String
+  - name: String
+  - quantity: Decimal
+  - unit: String
+  - supplier: String
+  --
+  + checkStock(): Boolean
+  + reorder(): void
+}
+
+class MenuCategory <<enumeration>> {
+  APPETIZERS
+  MAINS
+  DESSERTS
+  BEVERAGES
+  SIDES
+  SPECIALS
+}
+
+' =========================
+' Relationships
+' =========================
+
+' COMPOSITION: Restaurant owns its menus
+' If restaurant is deleted, its menus are also deleted
+Restaurant "1" *-- "1..*" Menu : "owns >"
+
+' COMPOSITION: Menu contains menu items
+' If menu is deleted, the items in that menu are removed
+Menu "1" *-- "0..*" MenuItem : "contains >"
+
+' AGGREGATION: Restaurant has an address
+' Address can exist independently of restaurant
+Restaurant "1" o-- "1" Address : "located at >"
+
+' AGGREGATION: MenuItem uses ingredients
+' Ingredients exist independently and can be shared across items
+MenuItem "1..*" o-- "1..*" Ingredient : "< uses"
+
+' ASSOCIATION: Manager manages restaurant
+RestaurantManager "1..*" -- "1" Restaurant : "manages >"
+
+' DEPENDENCY: Menu uses category
+Menu ..> MenuCategory : "uses"
+
+note right of Restaurant
+  **COMPOSITION** with Menu:
+  - Restaurant OWNS menus
+  - Menus cannot exist without restaurant
+  - Deleting restaurant deletes all menus
+  - Strong lifecycle dependency
+end note
+
+note left of Restaurant
+  **AGGREGATION** with Address:
+  - Restaurant HAS an address
+  - Address can exist independently
+  - Multiple restaurants can share
+    an address (mall food courts)
+  - Weak lifecycle dependency
+end note
+
+note bottom of MenuItem
+  **AGGREGATION** with Ingredient:
+  - MenuItem USES ingredients
+  - Ingredients are shared resources
+  - Same ingredient used in multiple items
+  - Ingredients exist in inventory
+    independently of menu items
+end note
+
+note top of Menu
+  **COMPOSITION** with MenuItem:
+  - Menu CONTAINS items
+  - Items belong to specific menu
+  - Removing item from menu
+    doesn't delete the item entity
+    (it can be in multiple menus)
+end note
+
+@enduml

@@ -1,0 +1,223 @@
+@startuml Order_Management_Composition
+
+!theme plain
+skinparam shadowing true
+skinparam roundcorner 8
+skinparam classAttributeIconSize 0
+
+title Diagram 4: Order Management Structure\n(Composition Relationships)
+
+' =========================
+' Main Classes
+' =========================
+
+class Customer {
+  - customerId: String
+  - name: String
+  - email: String
+  - phone: String
+  --
+  + placeOrder(items: List<OrderItem>): Order
+  + trackOrder(orderId: String): OrderStatus
+  + cancelOrder(orderId: String): Boolean
+}
+
+class Order {
+  - orderId: String
+  - orderDate: Date
+  - status: OrderStatus
+  - totalAmount: Decimal
+  - specialInstructions: String
+  - createdAt: DateTime
+  --
+  + calculateTotal(): Decimal
+  + updateStatus(status: OrderStatus): void
+  + getItems(): List<OrderItem>
+  + applyDiscount(discount: Decimal): void
+  + cancel(): Boolean
+}
+
+class OrderItem {
+  - orderItemId: String
+  - quantity: Integer
+  - unitPrice: Decimal
+  - customizations: String
+  - subtotal: Decimal
+  --
+  + calculateSubtotal(): Decimal
+  + updateQuantity(newQty: Integer): void
+  + addCustomization(custom: String): void
+}
+
+class Payment {
+  - paymentId: String
+  - amount: Decimal
+  - status: PaymentStatus
+  - transactionDate: DateTime
+  - transactionId: String
+  --
+  + processPayment(): Boolean
+  + refund(): Boolean
+  + getReceipt(): String
+}
+
+class Delivery {
+  - deliveryId: String
+  - status: DeliveryStatus
+  - estimatedTime: DateTime
+  - actualDeliveryTime: DateTime
+  - distance: Decimal
+  - deliveryFee: Decimal
+  --
+  + assignAgent(agent: DeliveryAgent): void
+  + updateStatus(status: DeliveryStatus): void
+  + getEstimatedArrival(): DateTime
+  + calculateDeliveryFee(): Decimal
+}
+
+class Invoice {
+  - invoiceId: String
+  - issueDate: DateTime
+  - dueDate: DateTime
+  - taxAmount: Decimal
+  - discountAmount: Decimal
+  - finalAmount: Decimal
+  --
+  + generatePDF(): File
+  + sendEmail(email: String): Boolean
+  + calculateTax(): Decimal
+}
+
+class OrderTracking {
+  - trackingId: String
+  - currentLocation: String
+  - lastUpdated: DateTime
+  - estimatedArrival: DateTime
+  --
+  + updateLocation(location: String): void
+  + getTrackingHistory(): List<TrackingEvent>
+  + notifyCustomer(): void
+}
+
+class Restaurant {
+  - restaurantId: String
+  - name: String
+  --
+  + receiveOrder(order: Order): void
+  + acceptOrder(orderId: String): Boolean
+}
+
+class MenuItem {
+  - menuItemId: String
+  - name: String
+  - price: Decimal
+  --
+  + getDetails(): String
+}
+
+class OrderStatus <<enumeration>> {
+  PENDING
+  CONFIRMED
+  PREPARING
+  OUT_FOR_DELIVERY
+  DELIVERED
+  CANCELLED
+}
+
+class PaymentStatus <<enumeration>> {
+  PENDING
+  AUTHORIZED
+  COMPLETED
+  FAILED
+  REFUNDED
+}
+
+class DeliveryStatus <<enumeration>> {
+  ASSIGNED
+  PICKED_UP
+  IN_TRANSIT
+  DELIVERED
+  FAILED
+}
+
+' =========================
+' Relationships
+' =========================
+
+' ASSOCIATION: Customer places orders
+Customer "1" -- "0..*" Order : "places >"
+
+' ASSOCIATION: Restaurant receives orders
+Restaurant "1" -- "0..*" Order : "< receives"
+
+' COMPOSITION: Order contains OrderItems
+' OrderItems cannot exist without an Order
+' If order is deleted, all its items are deleted
+Order "1" *-- "1..*" OrderItem : "consists of >"
+
+' COMPOSITION: Order has Payment
+' Payment belongs exclusively to one order
+' Payment lifecycle tied to order
+Order "1" *-- "1" Payment : "paid by >"
+
+' COMPOSITION: Order has Delivery
+' Delivery exists only for this specific order
+' Deleting order removes delivery
+Order "1" *-- "0..1" Delivery : "fulfilled by >"
+
+' COMPOSITION: Order generates Invoice
+' Invoice belongs to specific order
+' Invoice cannot exist without order
+Order "1" *-- "1" Invoice : "generates >"
+
+' COMPOSITION: Order has tracking
+' Tracking specific to this order
+Order "1" *-- "0..1" OrderTracking : "tracked by >"
+
+' ASSOCIATION: OrderItem references MenuItem
+' MenuItem exists independently in restaurant's menu
+OrderItem "1" --> "1" MenuItem : "refers to >"
+
+' DEPENDENCIES
+Order ..> OrderStatus : "uses"
+Payment ..> PaymentStatus : "uses"
+Delivery ..> DeliveryStatus : "uses"
+
+note right of Order
+  **COMPOSITION** relationships:
+  
+  Order is the "whole" that owns:
+  - OrderItems (parts)
+  - Payment (exclusive)
+  - Delivery (specific to order)
+  - Invoice (belongs to order)
+  - OrderTracking (order-specific)
+  
+  If Order is deleted, ALL these
+  components are also deleted.
+  They cannot exist independently.
+end note
+
+note bottom of OrderItem
+  **COMPOSITION**:
+  OrderItem is a PART of Order
+  - Created when order is placed
+  - Destroyed when order is deleted
+  - Cannot exist without parent Order
+  - Cannot be shared across orders
+  
+  **vs ASSOCIATION**:
+  OrderItem REFERENCES MenuItem
+  - MenuItem exists independently
+  - Same MenuItem can be in many orders
+  - Deleting OrderItem doesn't delete MenuItem
+end note
+
+note top of Payment
+  Strong ownership:
+  Payment belongs exclusively
+  to one Order and shares its
+  complete lifecycle
+end note
+
+@enduml

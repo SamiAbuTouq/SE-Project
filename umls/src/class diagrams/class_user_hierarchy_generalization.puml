@@ -1,0 +1,139 @@
+@startuml User_Hierarchy_Generalization
+
+!theme plain
+skinparam shadowing true
+skinparam roundcorner 8
+skinparam classAttributeIconSize 0
+
+title Diagram 1: User Hierarchy\n(Generalization/Inheritance)
+
+' =========================
+' Abstract Base Class
+' =========================
+
+abstract class User {
+  # userId: String
+  # name: String
+  # email: String
+  # phone: String
+  # registeredAt: DateTime
+  # isActive: Boolean
+  --
+  + updateProfile(): void
+  + authenticate(): Boolean
+  + changePassword(newPassword: String): Boolean
+  {abstract} + getRole(): String
+  {abstract} + getPermissions(): List<String>
+}
+
+' =========================
+' Concrete User Classes
+' =========================
+
+class Customer {
+  - customerId: String
+  - loyaltyPoints: Integer
+  - preferredCuisine: String
+  - membershipTier: String
+  --
+  + browseMenu(restaurantId: String): List<MenuItem>
+  + placeOrder(items: List<OrderItem>): Order
+  + trackOrder(orderId: String): OrderStatus
+  + rateDelivery(deliveryId: String, rating: Integer): void
+  + getRole(): String
+  + getPermissions(): List<String>
+  + redeemLoyaltyPoints(points: Integer): Discount
+}
+
+class DeliveryAgent {
+  - agentId: String
+  - vehicleType: String
+  - vehicleNumber: String
+  - isAvailable: Boolean
+  - rating: Decimal
+  - totalDeliveries: Integer
+  --
+  + acceptDelivery(deliveryId: String): Boolean
+  + completeDelivery(deliveryId: String): void
+  + updateLocation(location: String): void
+  + toggleAvailability(): void
+  + getRole(): String
+  + getPermissions(): List<String>
+}
+
+class RestaurantManager {
+  - managerId: String
+  - restaurantId: String
+  - permissions: List<String>
+  - hireDate: Date
+  --
+  + manageMenu(): void
+  + viewOrders(): List<Order>
+  + updateRestaurantStatus(isOpen: Boolean): void
+  + generateReports(): Report
+  + getRole(): String
+  + getPermissions(): List<String>
+}
+
+class Admin {
+  - adminId: String
+  - accessLevel: Integer
+  - department: String
+  --
+  + manageUsers(): void
+  + viewSystemLogs(): List<Log>
+  + configureSystem(): void
+  + resolveDisputes(): void
+  + getRole(): String
+  + getPermissions(): List<String>
+}
+
+' =========================
+' Generalization Relationships
+' =========================
+
+User <|-- Customer
+User <|-- DeliveryAgent
+User <|-- RestaurantManager
+User <|-- Admin
+
+' =========================
+' Supporting Classes
+' =========================
+
+class Address {
+  - street: String
+  - city: String
+  - state: String
+  - postalCode: String
+  - country: String
+  --
+  + getFullAddress(): String
+  + validate(): Boolean
+}
+
+' Users have addresses (aggregation)
+User "1" o-- "1..*" Address : "has"
+
+note right of User
+  Abstract base class containing
+  common attributes and behaviors
+  for all system users.
+  
+  Subclasses must implement:
+  - getRole()
+  - getPermissions()
+end note
+
+note bottom of Customer
+  Customers can browse menus,
+  place orders, and earn
+  loyalty points
+end note
+
+note bottom of DeliveryAgent
+  Agents deliver orders and
+  maintain availability status
+end note
+
+@enduml

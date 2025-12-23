@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <title>Use Case&colon; Place Order</title>
+            <style>
+/* From extension vscode.github */
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.vscode-dark img[src$=\#gh-light-mode-only],
+.vscode-light img[src$=\#gh-dark-mode-only],
+.vscode-high-contrast:not(.vscode-high-contrast-light) img[src$=\#gh-light-mode-only],
+.vscode-high-contrast-light img[src$=\#gh-dark-mode-only] {
+	display: none;
+}
+
+</style>
+            
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/markdown.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/highlight.css">
+<style>
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe WPC', 'Segoe UI', system-ui, 'Ubuntu', 'Droid Sans', sans-serif;
+                font-size: 14px;
+                line-height: 1.6;
+            }
+        </style>
+        <style>
+.task-list-item {
+    list-style-type: none;
+}
+
+.task-list-item-checkbox {
+    margin-left: -20px;
+    vertical-align: middle;
+    pointer-events: none;
+}
+</style>
+<style>
+:root {
+  --color-note: #0969da;
+  --color-tip: #1a7f37;
+  --color-warning: #9a6700;
+  --color-severe: #bc4c00;
+  --color-caution: #d1242f;
+  --color-important: #8250df;
+}
+
+</style>
+<style>
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-note: #2f81f7;
+    --color-tip: #3fb950;
+    --color-warning: #d29922;
+    --color-severe: #db6d28;
+    --color-caution: #f85149;
+    --color-important: #a371f7;
+  }
+}
+
+</style>
+<style>
+.markdown-alert {
+  padding: 0.5rem 1rem;
+  margin-bottom: 16px;
+  color: inherit;
+  border-left: .25em solid #888;
+}
+
+.markdown-alert>:first-child {
+  margin-top: 0
+}
+
+.markdown-alert>:last-child {
+  margin-bottom: 0
+}
+
+.markdown-alert .markdown-alert-title {
+  display: flex;
+  font-weight: 500;
+  align-items: center;
+  line-height: 1
+}
+
+.markdown-alert .markdown-alert-title .octicon {
+  margin-right: 0.5rem;
+  display: inline-block;
+  overflow: visible !important;
+  vertical-align: text-bottom;
+  fill: currentColor;
+}
+
+.markdown-alert.markdown-alert-note {
+  border-left-color: var(--color-note);
+}
+
+.markdown-alert.markdown-alert-note .markdown-alert-title {
+  color: var(--color-note);
+}
+
+.markdown-alert.markdown-alert-important {
+  border-left-color: var(--color-important);
+}
+
+.markdown-alert.markdown-alert-important .markdown-alert-title {
+  color: var(--color-important);
+}
+
+.markdown-alert.markdown-alert-warning {
+  border-left-color: var(--color-warning);
+}
+
+.markdown-alert.markdown-alert-warning .markdown-alert-title {
+  color: var(--color-warning);
+}
+
+.markdown-alert.markdown-alert-tip {
+  border-left-color: var(--color-tip);
+}
+
+.markdown-alert.markdown-alert-tip .markdown-alert-title {
+  color: var(--color-tip);
+}
+
+.markdown-alert.markdown-alert-caution {
+  border-left-color: var(--color-caution);
+}
+
+.markdown-alert.markdown-alert-caution .markdown-alert-title {
+  color: var(--color-caution);
+}
+
+</style>
+        
+        </head>
+        <body class="vscode-body vscode-light">
+            <h2 id="use-case-place-order">Use Case: Place Order</h2>
+<table>
+<thead>
+<tr>
+<th><strong>Field</strong></th>
+<th><strong>Details</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Use Case Name</strong></td>
+<td>Place Order</td>
+</tr>
+<tr>
+<td><strong>Primary Actor</strong></td>
+<td>Customer</td>
+</tr>
+<tr>
+<td><strong>Secondary Actors</strong></td>
+<td>Restaurant, Payment Gateway, Notification Service</td>
+</tr>
+<tr>
+<td><strong>Description / Goal</strong></td>
+<td>Allows a customer to place a food order by selecting items, configuring delivery details, validating the order, completing payment successfully, and receiving confirmation while notifying the restaurant.</td>
+</tr>
+<tr>
+<td><strong>Preconditions</strong></td>
+<td>• Customer is logged in (authenticated session)<br>• Customer account is active and in good standing<br>• Cart contains at least one item<br>• Customer has at least one delivery address or can add a new one<br>• At least one restaurant is available and accepting orders<br>• Payment Gateway is operational</td>
+</tr>
+<tr>
+<td><strong>Postconditions (Success)</strong></td>
+<td>• Order is created with a unique Order ID<br>• Payment is processed successfully and Transaction ID is recorded<br>• Customer receives order confirmation with ETA<br>• Restaurant receives new order notification<br>• Order status set to <strong>Pending Restaurant Confirmation</strong><br>• Cart is cleared<br>• Inventory/menu availability updated (if applicable)<br>• Order history updated</td>
+</tr>
+<tr>
+<td><strong>Postconditions (Failure)</strong></td>
+<td>• No order is created; payment is refunded if captured<br>• Customer is notified with a clear failure reason<br>• Cart contents are preserved for retry<br>• Restaurant is not notified<br>• Error is logged by the system</td>
+</tr>
+<tr>
+<td><strong>Triggers</strong></td>
+<td>Customer clicks <strong>Place Order</strong> from checkout/order summary screen</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="main-success-scenario-basic-flow">Main Success Scenario (Basic Flow)</h2>
+<table>
+<thead>
+<tr>
+<th><strong>Step</strong></th>
+<th><strong>Actor</strong></th>
+<th><strong>Action</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Customer</td>
+<td>Initiates <strong>Place Order</strong>.</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Customer</td>
+<td>Selects food items from menu and adds them to cart.</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Customer</td>
+<td><em>(Optional)</em> Customizes items (special instructions, add-ons).</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Customer</td>
+<td>Manages cart (add/remove/update item quantities).</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Customer</td>
+<td>Selects or adds delivery address.</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Customer</td>
+<td><em>(Optional)</em> Schedules order for later delivery.</td>
+</tr>
+<tr>
+<td>7</td>
+<td>System</td>
+<td>Displays order summary (items, address, timing, costs).</td>
+</tr>
+<tr>
+<td>8</td>
+<td>Customer</td>
+<td><em>(Optional)</em> Applies coupon or discount.</td>
+</tr>
+<tr>
+<td>9</td>
+<td>Customer</td>
+<td><em>(Optional)</em> Adds tip.</td>
+</tr>
+<tr>
+<td>10</td>
+<td>System</td>
+<td>Calculates final order total (prices, tax, delivery fee, discounts, tip).</td>
+</tr>
+<tr>
+<td>11</td>
+<td>System</td>
+<td>Validates order (restaurant availability, delivery area, minimum order, item availability).</td>
+</tr>
+<tr>
+<td>12</td>
+<td>Customer</td>
+<td>Proceeds to make payment.</td>
+</tr>
+<tr>
+<td>13</td>
+<td>Payment Gateway</td>
+<td>Processes payment and returns success response.</td>
+</tr>
+<tr>
+<td>14</td>
+<td>System</td>
+<td>Creates order record and stores payment transaction ID.</td>
+</tr>
+<tr>
+<td>15</td>
+<td>Notification Service</td>
+<td>Sends order confirmation to customer and order alert to restaurant.</td>
+</tr>
+<tr>
+<td>16</td>
+<td>Customer</td>
+<td><em>(Optional)</em> Saves order as favorite.</td>
+</tr>
+<tr>
+<td>17</td>
+<td>System</td>
+<td>Completes order placement successfully.</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="alternative-flow-1-payment-failure">Alternative Flow 1: Payment Failure</h2>
+<table>
+<thead>
+<tr>
+<th><strong>Step</strong></th>
+<th><strong>Actor</strong></th>
+<th><strong>Action</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>AF1.1</td>
+<td>System</td>
+<td>Flow diverges at Step 13 of Main Success Scenario (Make Payment).</td>
+</tr>
+<tr>
+<td>AF1.2</td>
+<td>Payment Gateway</td>
+<td>Returns payment failure response (e.g., insufficient funds, invalid card, expired card, timeout).</td>
+</tr>
+<tr>
+<td>AF1.3</td>
+<td>System</td>
+<td>Displays specific payment error message to customer.</td>
+</tr>
+<tr>
+<td>AF1.4</td>
+<td>Customer</td>
+<td>Chooses to retry payment, change payment method, or cancel order.</td>
+</tr>
+<tr>
+<td>AF1.5</td>
+<td>System</td>
+<td>If retry succeeds, resumes Main Success Scenario at Step 14.</td>
+</tr>
+<tr>
+<td>AF1.6</td>
+<td>System</td>
+<td>If customer cancels, preserves cart and terminates use case with no order created.</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="alternative-flow-2-order-validation-failure">Alternative Flow 2: Order Validation Failure</h2>
+<table>
+<thead>
+<tr>
+<th><strong>Step</strong></th>
+<th><strong>Actor</strong></th>
+<th><strong>Action</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>AF2.1</td>
+<td>System</td>
+<td>Flow diverges at Step 11 of Main Success Scenario (Validate Order).</td>
+</tr>
+<tr>
+<td>AF2.2</td>
+<td>System</td>
+<td>Detects validation failure (restaurant closed, address out of range, minimum not met, item unavailable).</td>
+</tr>
+<tr>
+<td>AF2.3</td>
+<td>System</td>
+<td>Displays specific validation error message.</td>
+</tr>
+<tr>
+<td>AF2.4</td>
+<td>Customer</td>
+<td>Modifies cart, selects different address, or chooses another restaurant.</td>
+</tr>
+<tr>
+<td>AF2.5</td>
+<td>System</td>
+<td>Returns customer to order summary and resumes flow from Step 7.</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="alternative-flow-3-cancel-order-before-payment">Alternative Flow 3: Cancel Order Before Payment</h2>
+<table>
+<thead>
+<tr>
+<th><strong>Step</strong></th>
+<th><strong>Actor</strong></th>
+<th><strong>Action</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>AF3.1</td>
+<td>Customer</td>
+<td>Cancels order at any point before payment confirmation.</td>
+</tr>
+<tr>
+<td>AF3.2</td>
+<td>System</td>
+<td>Preserves cart contents for future session.</td>
+</tr>
+<tr>
+<td>AF3.3</td>
+<td>System</td>
+<td>Terminates use case with no order created and no charges applied.</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="exception-flows">Exception Flows</h2>
+<table>
+<thead>
+<tr>
+<th><strong>Step</strong></th>
+<th><strong>Actor</strong></th>
+<th><strong>Action</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>EF1.1</td>
+<td>System</td>
+<td>Encounters system or database error while creating the order after successful payment.</td>
+</tr>
+<tr>
+<td>EF1.2</td>
+<td>System</td>
+<td>Initiates payment refund and informs customer that the order could not be completed.</td>
+</tr>
+<tr>
+<td>EF2.1</td>
+<td>System</td>
+<td>Detects session timeout due to customer inactivity before payment confirmation.</td>
+</tr>
+<tr>
+<td>EF2.2</td>
+<td>System</td>
+<td>Saves cart contents and ends session; customer may resume order after logging in again.</td>
+</tr>
+</tbody>
+</table>
+
+            
+            
+        </body>
+        </html>

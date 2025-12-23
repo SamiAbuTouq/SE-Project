@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <title>State-Stimulus Table&colon; Online Food Ordering System</title>
+            <style>
+/* From extension vscode.github */
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.vscode-dark img[src$=\#gh-light-mode-only],
+.vscode-light img[src$=\#gh-dark-mode-only],
+.vscode-high-contrast:not(.vscode-high-contrast-light) img[src$=\#gh-light-mode-only],
+.vscode-high-contrast-light img[src$=\#gh-dark-mode-only] {
+	display: none;
+}
+
+</style>
+            
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/markdown.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/highlight.css">
+<style>
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe WPC', 'Segoe UI', system-ui, 'Ubuntu', 'Droid Sans', sans-serif;
+                font-size: 14px;
+                line-height: 1.6;
+            }
+        </style>
+        <style>
+.task-list-item {
+    list-style-type: none;
+}
+
+.task-list-item-checkbox {
+    margin-left: -20px;
+    vertical-align: middle;
+    pointer-events: none;
+}
+</style>
+<style>
+:root {
+  --color-note: #0969da;
+  --color-tip: #1a7f37;
+  --color-warning: #9a6700;
+  --color-severe: #bc4c00;
+  --color-caution: #d1242f;
+  --color-important: #8250df;
+}
+
+</style>
+<style>
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-note: #2f81f7;
+    --color-tip: #3fb950;
+    --color-warning: #d29922;
+    --color-severe: #db6d28;
+    --color-caution: #f85149;
+    --color-important: #a371f7;
+  }
+}
+
+</style>
+<style>
+.markdown-alert {
+  padding: 0.5rem 1rem;
+  margin-bottom: 16px;
+  color: inherit;
+  border-left: .25em solid #888;
+}
+
+.markdown-alert>:first-child {
+  margin-top: 0
+}
+
+.markdown-alert>:last-child {
+  margin-bottom: 0
+}
+
+.markdown-alert .markdown-alert-title {
+  display: flex;
+  font-weight: 500;
+  align-items: center;
+  line-height: 1
+}
+
+.markdown-alert .markdown-alert-title .octicon {
+  margin-right: 0.5rem;
+  display: inline-block;
+  overflow: visible !important;
+  vertical-align: text-bottom;
+  fill: currentColor;
+}
+
+.markdown-alert.markdown-alert-note {
+  border-left-color: var(--color-note);
+}
+
+.markdown-alert.markdown-alert-note .markdown-alert-title {
+  color: var(--color-note);
+}
+
+.markdown-alert.markdown-alert-important {
+  border-left-color: var(--color-important);
+}
+
+.markdown-alert.markdown-alert-important .markdown-alert-title {
+  color: var(--color-important);
+}
+
+.markdown-alert.markdown-alert-warning {
+  border-left-color: var(--color-warning);
+}
+
+.markdown-alert.markdown-alert-warning .markdown-alert-title {
+  color: var(--color-warning);
+}
+
+.markdown-alert.markdown-alert-tip {
+  border-left-color: var(--color-tip);
+}
+
+.markdown-alert.markdown-alert-tip .markdown-alert-title {
+  color: var(--color-tip);
+}
+
+.markdown-alert.markdown-alert-caution {
+  border-left-color: var(--color-caution);
+}
+
+.markdown-alert.markdown-alert-caution .markdown-alert-title {
+  color: var(--color-caution);
+}
+
+</style>
+        
+        </head>
+        <body class="vscode-body vscode-light">
+            <h1 id="state-stimulus-table-online-food-ordering-system">State-Stimulus Table: Online Food Ordering System</h1>
+<h2 id="main-state-transitions">Main State Transitions</h2>
+<table>
+<thead>
+<tr>
+<th>Current State</th>
+<th>Stimulus/Event</th>
+<th>Condition</th>
+<th>Action(s)</th>
+<th>Next State</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>[Initial]</strong></td>
+<td>Customer adds item to cart</td>
+<td>-</td>
+<td>Create shopping session</td>
+<td>Shopping Cart (ItemsInCart)</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="shopping-cart-states">Shopping Cart States</h2>
+<table>
+<thead>
+<tr>
+<th>Current State</th>
+<th>Stimulus/Event</th>
+<th>Condition</th>
+<th>Action(s)</th>
+<th>Next State</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Items In Cart</strong></td>
+<td>updateCartItem()</td>
+<td>-</td>
+<td>Recalculate total</td>
+<td>Cart Modified</td>
+</tr>
+<tr>
+<td><strong>Cart Modified</strong></td>
+<td>itemUpdated</td>
+<td>-</td>
+<td>Update cart display</td>
+<td>Items In Cart</td>
+</tr>
+<tr>
+<td><strong>Items In Cart</strong></td>
+<td>proceedToCheckout()</td>
+<td>-</td>
+<td>Initiate checkout process</td>
+<td>Cart Reviewed</td>
+</tr>
+<tr>
+<td><strong>Cart Reviewed</strong></td>
+<td>continueShoppingSelected</td>
+<td>-</td>
+<td>Return to shopping mode</td>
+<td>Items In Cart</td>
+</tr>
+<tr>
+<td><strong>Shopping Cart</strong></td>
+<td>confirmOrder()</td>
+<td>-</td>
+<td>Generate OrderID</td>
+<td>Order Placed (Awaiting Payment)</td>
+</tr>
+<tr>
+<td><strong>Shopping Cart</strong></td>
+<td>cartAbandoned</td>
+<td>timeout &gt; 30min</td>
+<td>Release items</td>
+<td>[Terminal]</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="order-placed---payment-states">Order Placed - Payment States</h2>
+<table>
+<thead>
+<tr>
+<th>Current State</th>
+<th>Stimulus/Event</th>
+<th>Condition</th>
+<th>Action(s)</th>
+<th>Next State</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Awaiting Payment</strong></td>
+<td>initiatePayment()</td>
+<td>-</td>
+<td>Start payment gateway</td>
+<td>Payment Processing</td>
+</tr>
+<tr>
+<td><strong>Payment Processing</strong></td>
+<td>paymentSuccess</td>
+<td>-</td>
+<td>Store transaction details</td>
+<td>Payment Verified</td>
+</tr>
+<tr>
+<td><strong>Payment Processing</strong></td>
+<td>paymentFailed</td>
+<td>-</td>
+<td>Log failure details</td>
+<td>Awaiting Payment</td>
+</tr>
+<tr>
+<td><strong>Order Placed</strong></td>
+<td>paymentCompleted</td>
+<td>-</td>
+<td>Notify restaurant</td>
+<td>Pending Confirmation</td>
+</tr>
+<tr>
+<td><strong>Order Placed</strong></td>
+<td>paymentTimeout</td>
+<td>time &gt; 15min</td>
+<td>Release order resources</td>
+<td>Cancelled</td>
+</tr>
+<tr>
+<td><strong>Order Placed</strong></td>
+<td>customerCancelRequest</td>
+<td>within 2min</td>
+<td>Cancel order</td>
+<td>Cancelled</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="confirmation-states">Confirmation States</h2>
+<table>
+<thead>
+<tr>
+<th>Current State</th>
+<th>Stimulus/Event</th>
+<th>Condition</th>
+<th>Action(s)</th>
+<th>Next State</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Pending Confirmation</strong></td>
+<td>restaurantAccepts</td>
+<td>-</td>
+<td>Update status, notify customer</td>
+<td>Confirmed</td>
+</tr>
+<tr>
+<td><strong>Pending Confirmation</strong></td>
+<td>restaurantRejects</td>
+<td>-</td>
+<td>Initiate refund process</td>
+<td>Rejected</td>
+</tr>
+<tr>
+<td><strong>Pending Confirmation</strong></td>
+<td>confirmationTimeout</td>
+<td>time &gt; 10min</td>
+<td>Auto-refund</td>
+<td>Cancelled</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="confirmed-state">Confirmed State</h2>
+<table>
+<thead>
+<tr>
+<th>Current State</th>
+<th>Stimulus/Event</th>
+<th>Condition</th>
+<th>Action(s)</th>
+<th>Next State</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Confirmed</strong></td>
+<td>restaurantStartsPreparation</td>
+<td>-</td>
+<td>Update ETA</td>
+<td>Preparing (In Kitchen)</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="preparing---kitchen-states">Preparing - Kitchen States</h2>
+<table>
+<thead>
+<tr>
+<th>Current State</th>
+<th>Stimulus/Event</th>
+<th>Condition</th>
+<th>Action(s)</th>
+<th>Next State</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>In Kitchen</strong></td>
+<td>cookingComplete</td>
+<td>-</td>
+<td>Move to inspection</td>
+<td>Quality Check</td>
+</tr>
+<tr>
+<td><strong>Quality Check</strong></td>
+<td>qualityApproved</td>
+<td>-</td>
+<td>Begin packaging</td>
+<td>Packaging</td>
+</tr>
+<tr>
+<td><strong>Quality Check</strong></td>
+<td>qualityFailed</td>
+<td>-</td>
+<td>Remake item</td>
+<td>In Kitchen</td>
+</tr>
+<tr>
+<td><strong>Packaging</strong></td>
+<td>packagingComplete</td>
+<td>-</td>
+<td>Mark ready</td>
+<td>[Exit Preparing State]</td>
+</tr>
+<tr>
+<td><strong>Preparing</strong></td>
+<td>preparationComplete</td>
+<td>-</td>
+<td>Assign delivery agent</td>
+<td>Ready For Pickup</td>
+</tr>
+<tr>
+<td><strong>Preparing</strong></td>
+<td>criticalIssue</td>
+<td>-</td>
+<td>Full refund</td>
+<td>Cancelled</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="ready-for-pickup-state">Ready For Pickup State</h2>
+<table>
+<thead>
+<tr>
+<th>Current State</th>
+<th>Stimulus/Event</th>
+<th>Condition</th>
+<th>Action(s)</th>
+<th>Next State</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Ready For Pickup</strong></td>
+<td>agentAssigned</td>
+<td>-</td>
+<td>Notify agent</td>
+<td>Out For Delivery (Agent Assigned)</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="out-for-delivery---delivery-states">Out For Delivery - Delivery States</h2>
+<table>
+<thead>
+<tr>
+<th>Current State</th>
+<th>Stimulus/Event</th>
+<th>Condition</th>
+<th>Action(s)</th>
+<th>Next State</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Agent Assigned</strong></td>
+<td>agentAcceptsAssignment</td>
+<td>-</td>
+<td>Update tracking</td>
+<td>Agent En Route to Restaurant</td>
+</tr>
+<tr>
+<td><strong>Agent En Route to Restaurant</strong></td>
+<td>agentArrivesAtRestaurant</td>
+<td>-</td>
+<td>Prepare for handoff</td>
+<td>At Restaurant</td>
+</tr>
+<tr>
+<td><strong>At Restaurant</strong></td>
+<td>orderCollected</td>
+<td>-</td>
+<td>Verify items</td>
+<td>Order Picked Up</td>
+</tr>
+<tr>
+<td><strong>Order Picked Up</strong></td>
+<td>agentDepartsRestaurant</td>
+<td>-</td>
+<td>Start GPS tracking</td>
+<td>En Route to Customer</td>
+</tr>
+<tr>
+<td><strong>En Route to Customer</strong></td>
+<td>agentArrivesAtCustomer</td>
+<td>-</td>
+<td>Prepare for delivery</td>
+<td>Arrived at Location</td>
+</tr>
+<tr>
+<td><strong>Out For Delivery</strong></td>
+<td>deliveryConfirmed</td>
+<td>-</td>
+<td>Complete transaction</td>
+<td>Delivered</td>
+</tr>
+<tr>
+<td><strong>Out For Delivery</strong></td>
+<td>deliveryAttemptFailed</td>
+<td>attempts &gt;= 3</td>
+<td>Mark as failed</td>
+<td>Delivery Failed</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="terminal-states">Terminal States</h2>
+<table>
+<thead>
+<tr>
+<th>Current State</th>
+<th>Stimulus/Event</th>
+<th>Condition</th>
+<th>Action(s)</th>
+<th>Next State</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Delivered</strong></td>
+<td>customerConfirmsReceipt</td>
+<td>-</td>
+<td>Request feedback</td>
+<td>Completed</td>
+</tr>
+<tr>
+<td><strong>Completed</strong></td>
+<td>-</td>
+<td>-</td>
+<td>Archive order</td>
+<td>[Final State]</td>
+</tr>
+<tr>
+<td><strong>Cancelled</strong></td>
+<td>-</td>
+<td>-</td>
+<td>Process refund if needed</td>
+<td>[Final State]</td>
+</tr>
+<tr>
+<td><strong>Rejected</strong></td>
+<td>-</td>
+<td>-</td>
+<td>Complete refund</td>
+<td>[Final State]</td>
+</tr>
+<tr>
+<td><strong>Delivery Failed</strong></td>
+<td>-</td>
+<td>-</td>
+<td>Handle compensation</td>
+<td>[Final State]</td>
+</tr>
+</tbody>
+</table>
+<hr>
+
+            
+            
+        </body>
+        </html>
